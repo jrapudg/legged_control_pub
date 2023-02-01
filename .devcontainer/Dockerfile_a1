@@ -51,7 +51,9 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-plotjuggler-ros  \
     ros-${ROS_DISTRO}-interactive-markers \
     ros-${ROS_DISTRO}-roslint \
-    clang-format-10
+    ros-${ROS_DISTRO}-rqt-controller-manager \
+    ros-${ROS_DISTRO}-xacro
+clang-format-10
 
 # ocs2 dependencies
 RUN sudo apt-get update \
@@ -190,17 +192,6 @@ RUN ls $UNITREE_WS/src/unitree_ros && \
 # RUN cmake -DCMAKE_BUILD_TYPE=Release ../ && \
 #     make -j${USE_PROC} && sudo make install
 
-
-# config zsh 
-RUN wget https://raw.githubusercontent.com/ohmyzsh/oh-my-zsh/master/tools/install.sh -O -
-RUN echo "export ROS_MASTER_URI=http://localhost:11311;export ROS_IP=localhost;export ROS_HOSTNAME=localhost" >> ~/.zshrc && \
-    echo "export PATH=/usr/local/julia/bin:${PATH}" >> ~/.zshrc && \
-    echo "#unitree config" >> ~/.zshrc && \
-    echo "export export UNITREE_SDK_VERSION=${UNITREE_SDK_VERSION}" >> ~/.zshrc && \
-    echo "export UNITREE_LEGGED_SDK_PATH=${SUPPORT_WS}/unitree_legged_sdk" >> ~/.zshrc && \
-    echo "export ALIENGO_SDK_PATH=${SUPPORT_WS}/aliengo_sdk" >> ~/.zshrc && \
-    echo "export UNITREE_PLATFORM=\"amd64\"" >> ~/.zshrc
-
 # install ocs2 
 
 ENV OCS2_WS=/home/${USERNAME}/ocs2_ws
@@ -223,17 +214,20 @@ RUN /bin/zsh -c "source ${UNITREE_WS}/devel/setup.zsh; catkin config -DCMAKE_BUI
 
 ENV CATKIN_WS=/home/${USERNAME}/legged_ctrl_ws
 RUN mkdir -p $CATKIN_WS/src
-RUN mkdir -p $CATKIN_WS/devel
-RUN touch $CATKIN_WS/devel/setup.zsh
 # final 
-RUN /bin/zsh -c "source ${OCS2_WS}/devel/setup.zsh" && echo "source /home/${USERNAME}/legged_ctrl_ws/devel/setup.zsh" >> ~/.zshrc  
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.4/zsh-in-docker.sh)" -- \
     -t robbyrussell \
-    -a 'source /opt/ros/noetic/setup.zsh' \
-    -a 'alias wssetup=". ./devel/setup.zsh"' \
     -p git \
     -p ssh-agent
+
+RUN echo "export ROS_MASTER_URI=http://localhost:11311;export ROS_IP=localhost;export ROS_HOSTNAME=localhost" >> ~/.zshrc && \
+    echo "#unitree config" >> ~/.zshrc && \
+    echo "export export UNITREE_SDK_VERSION=${UNITREE_SDK_VERSION}" >> ~/.zshrc && \
+    echo "export UNITREE_LEGGED_SDK_PATH=${SUPPORT_WS}/unitree_legged_sdk" >> ~/.zshrc && \
+    echo "export ALIENGO_SDK_PATH=${SUPPORT_WS}/aliengo_sdk" >> ~/.zshrc && \
+    echo "export UNITREE_PLATFORM=\"amd64\"" >> ~/.zshrc
+RUN /bin/zsh -c "source ${OCS2_WS}/devel/setup.zsh" && echo "source /home/${USERNAME}/legged_ctrl_ws/devel/setup.zsh" >> ~/.zshrc  
 
 
 RUN echo "export ROBOT_TYPE=a1" >> ~/.zshrc
