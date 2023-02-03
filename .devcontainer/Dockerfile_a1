@@ -52,8 +52,8 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-interactive-markers \
     ros-${ROS_DISTRO}-roslint \
     ros-${ROS_DISTRO}-rqt-controller-manager \
-    ros-${ROS_DISTRO}-xacro
-clang-format-10
+    ros-${ROS_DISTRO}-xacro \
+    clang-format-10
 
 # ocs2 dependencies
 RUN sudo apt-get update \
