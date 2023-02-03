@@ -24,11 +24,30 @@ catkin_package(
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
+        $ENV{UNITREE_LEGGED_SDK_PATH}/include
 )
 
-link_directories(lib)
+if ($ENV{ROBOT_TYPE} STREQUAL "a1")
+        link_directories($ENV{UNITREE_LEGGED_SDK_PATH}/lib)
+        if ($ENV{UNITREE_PLATFORM} STREQUAL "amd64")
+                set(EXTRA_LIBS libunitree_legged_sdk_amd64.so lcm)
+        endif()
 
-set(EXTRA_LIBS libunitree_legged_sdk_amd64.so lcm)
+        if($ENV{UNITREE_PLATFORM} STREQUAL "arm64")
+                set(EXTRA_LIBS libunitree_legged_sdk_arm64.so lcm)
+        endif()
+endif()
+
+if ($ENV{ROBOT_TYPE} STREQUAL "go1")
+        if ($ENV{UNITREE_PLATFORM} STREQUAL "amd64")
+                link_directories($ENV{UNITREE_LEGGED_SDK_PATH}/lib/cpp/amd64)
+                set(UNITREE_LIBS -pthread libunitree_legged_sdk.a lcm)
+        endif()
+        if ($ENV{UNITREE_PLATFORM} STREQUAL "arm64")
+                link_directories($ENV{UNITREE_LEGGED_SDK_PATH}/lib/cpp/arm64)
+                set(UNITREE_LIBS -pthread libunitree_legged_sdk.a lcm)
+        endif()
+endif()
 
 ## Declare cpp executables
 add_executable(${PROJECT_NAME}
