@@ -21,9 +21,9 @@ namespace legged
     setupContactSensor(robot_hw_nh);
 
     // for a1
-#if ROBOT_TYPE == A1
+#if ROBOT_TYPE == ROBOT_TYPE_A1
     udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL);
-#elif ROBOT_TYPE == GO1
+#elif ROBOT_TYPE == ROBOT_TYPE_GO1
     // for go1
     udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL, 8090, "192.168.123.10", 8007);
 #endif
@@ -33,12 +33,12 @@ namespace legged
     std::string robot_type;
     root_nh.getParam("robot_type", robot_type);
 
-#if ROBOT_TYPE == A1
+#if ROBOT_TYPE == ROBOT_TYPE_A1
     safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::A1);
-#elif ROBOT_TYPE == ALIENGO
+#elif ROBOT_TYPE == ROBOT_TYPE_ALIENGO
     safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Aliengo);
 
-#elif ROBOT_TYPE == GO1
+#elif ROBOT_TYPE == ROBOT_TYPE_GO1
     safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Go1);
 #endif
     // else
