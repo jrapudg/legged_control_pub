@@ -20,7 +20,11 @@ namespace legged
     setupImu();
     setupContactSensor(robot_hw_nh);
 
+    // for a1
     udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL);
+    // for go1
+    // udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL, 8090, "192.168.123.10", 8007);
+
     udp_->InitCmdData(lowCmd_);
 
     std::string robot_type;
@@ -33,6 +37,10 @@ namespace legged
     {
       safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Aliengo);
     }
+    // else if (robot_type == "go1")
+    // {
+    //   safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Go1);
+    // }
     else
     {
       ROS_FATAL("Unknown robot type: %s", robot_type.c_str());
