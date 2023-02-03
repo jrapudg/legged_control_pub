@@ -21,31 +21,31 @@ namespace legged
     setupContactSensor(robot_hw_nh);
 
     // for a1
+#if ROBOT_TYPE == A1
     udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL);
+#elif ROBOT_TYPE == GO1
     // for go1
-    // udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL, 8090, "192.168.123.10", 8007);
+    udp_ = std::make_shared<UNITREE_LEGGED_SDK::UDP>(UNITREE_LEGGED_SDK::LOWLEVEL, 8090, "192.168.123.10", 8007);
+#endif
 
     udp_->InitCmdData(lowCmd_);
 
     std::string robot_type;
     root_nh.getParam("robot_type", robot_type);
-    if (robot_type == "a1")
-    {
-      safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::A1);
-    }
-    else if (robot_type == "aliengo")
-    {
-      safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Aliengo);
-    }
-    // else if (robot_type == "go1")
+
+#if ROBOT_TYPE == A1
+    safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::A1);
+#elif ROBOT_TYPE == ALIENGO
+    safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Aliengo);
+
+#elif ROBOT_TYPE == GO1
+    safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Go1);
+#endif
+    // else
     // {
-    //   safety_ = std::make_shared<UNITREE_LEGGED_SDK::Safety>(UNITREE_LEGGED_SDK::LeggedType::Go1);
+    //   ROS_FATAL("Unknown robot type: %s", robot_type.c_str());
+    //   return false;
     // }
-    else
-    {
-      ROS_FATAL("Unknown robot type: %s", robot_type.c_str());
-      return false;
-    }
 
     ros::Publisher imu_pub = robot_hw_nh.advertise<sensor_msgs::Imu>("/unitree_hardware/imu", 100);
     ros::Publisher joint_foot_pub = robot_hw_nh.advertise<sensor_msgs::JointState>("/unitree_hardware/joint_foot", 100);

@@ -28,6 +28,7 @@ include_directories(
 )
 
 if ($ENV{ROBOT_TYPE} STREQUAL "a1")
+        add_compile_definitions(ROBOT_TYPE=A1)
         link_directories($ENV{UNITREE_LEGGED_SDK_PATH}/lib)
         if ($ENV{UNITREE_PLATFORM} STREQUAL "amd64")
                 set(EXTRA_LIBS libunitree_legged_sdk_amd64.so lcm)
@@ -38,7 +39,8 @@ if ($ENV{ROBOT_TYPE} STREQUAL "a1")
         endif()
 endif()
 
-if ($ENV{ROBOT_TYPE} STREQUAL "go1")
+if($ENV{ROBOT_TYPE} STREQUAL "go1")
+        add_compile_definitions(ROBOT_TYPE=GO1)
         if ($ENV{UNITREE_PLATFORM} STREQUAL "amd64")
                 link_directories($ENV{UNITREE_LEGGED_SDK_PATH}/lib/cpp/amd64)
                 set(UNITREE_LIBS -pthread libunitree_legged_sdk.a lcm)
