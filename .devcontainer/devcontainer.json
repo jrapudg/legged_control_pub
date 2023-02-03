@@ -2,15 +2,17 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.238.0/containers/ubuntu
 {
 	"name": "Ubuntu",
-	"build": {
-		"dockerfile": "Dockerfile_a1",
-		// Update 'VARIANT' to pick an Ubuntu version: jammy / ubuntu-22.04, focal / ubuntu-20.04, bionic /ubuntu-18.04
-		// Use ubuntu-22.04 or ubuntu-18.04 on local arm64/Apple Silicon.
-		"args": {
-			"-t": "legged_cpp_ctrl_image_a1",
-			"USE_PROC": "8"
-		}
-	},
+	"image": "yyss2028/legged_control:a1",
+	// "build": {
+	// 	// "dockerfile": "Dockerfile_a1",
+	// 	"dockerfile": "Dockerfile_go1",
+	// 	// Update 'VARIANT' to pick an Ubuntu version: jammy / ubuntu-22.04, focal / ubuntu-20.04, bionic /ubuntu-18.04
+	// 	// Use ubuntu-22.04 or ubuntu-18.04 on local arm64/Apple Silicon.
+	// 	"args": {
+	// 		"-t": "legged_cpp_ctrl_image_go1",
+	// 		"USE_PROC": "8"
+	// 	}
+	// },
 	"runArgs": [
 		"--network=host",
 		"--privileged",
