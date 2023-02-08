@@ -10,9 +10,12 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
 #include <mutex>
+#include <thread>
 
 #include <ocs2_mpc/SystemObservation.h>
 #include <ocs2_ros_interfaces/command/TargetTrajectoriesRosPublisher.h>
+
+#include "legged_controllers/ROSJoyProcessor.hpp"
 
 namespace legged {
 using namespace ocs2;
@@ -80,6 +83,42 @@ class TargetTrajectoriesPublisher final {
 
     goalSub_ = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1, goalCallback);
     cmdVelSub_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, cmdVelCallback);
+
+    // start a slow loop to process rosJoy data 
+    rosJoy = new ROSJoyProcessor(nh);
+    ros::Time prev = ros::Time::now();
+    ros::Time now = ros::Time::now();
+    ros::Duration dt(0);
+    joyThread_ = std::thread([&]() {
+      while (ros::ok() && rosJoy->isExit() == false) {
+        if (latestObservation_.time == 0.0) {
+          continue;
+        }
+
+        try {
+          // get time
+          now = ros::Time::now();
+          dt = now - prev;
+          prev = now;
+          double dt_s = dt.toSec();
+
+          // joy update
+          rosJoy->processJoy(dt_s);
+
+          vector_t cmdVel = vector_t::Zero(4);
+          cmdVel[0] = rosJoy->joy_cmd_velx;
+          cmdVel[1] = rosJoy->joy_cmd_vely;
+          cmdVel[2] = rosJoy->joy_cmd_velz;
+          cmdVel[3] = rosJoy->joy_cmd_yaw_rate;
+
+          const auto trajectories = cmdVelToTargetTrajectories_(cmdVel, latestObservation_);
+          targetTrajectoriesPublisher_->publishTargetTrajectories(trajectories);
+
+        } catch (const std::exception& e) {
+          ROS_ERROR_STREAM("[ros JOY] Error : " << e.what());
+        }
+      }
+    });
   }
 
  private:
@@ -90,6 +129,9 @@ class TargetTrajectoriesPublisher final {
   ::ros::Subscriber observationSub_, goalSub_, cmdVelSub_;
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener tf2_;
+
+  ROSJoyProcessor* rosJoy;
+  std::thread joyThread_;
 
   mutable std::mutex latestObservationMutex_;
   SystemObservation latestObservation_;

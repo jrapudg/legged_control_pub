@@ -84,6 +84,7 @@ public:
     // public joystick command
     double joy_cmd_velx = 0.0;
     double joy_cmd_vely = 0.0;
+    double joy_cmd_velz = 0.0;
     double joy_cmd_body_height = 0.28; // unitree Go1 default height
     double joy_cmd_yaw_rate = 0.0;
     //  0 is standing, 1 is walking
@@ -94,7 +95,6 @@ private:
     ros::Subscriber sub_joy_msg;
 
     // private joystick command, intermediate
-    double joy_cmd_velz = 0.0;
     double joy_cmd_roll_rate = 0.0;
     double joy_cmd_pitch_rate = 0.0;
     double joy_cmd_pitch_ang = 0.0;
