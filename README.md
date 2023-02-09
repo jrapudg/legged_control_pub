@@ -19,6 +19,20 @@ https://user-images.githubusercontent.com/21256355/192135828-8fa7d9bb-9b4d-41f9-
 
 ## Installation
 
+### Docker version
+If you are using x86 64, directly use the devcontainer extension of VSCode to open the project. It will automatically load a docker image from dockerhub and give you all the environment.
+
+After the docker is built, do the following steps in the docker container:
+
+1. source ~/ocs2_ws/devel/setup.zsh
+2. source ~/legged_ctrl_ws/devel/setup.zsh
+3. sudo ldconfig
+4. Follow "Quick Start" below
+
+If you are not using x86 64, you need to compile the dockerfile yourself. Modify file "devcontainer.json" to use either Dockerfile_a1 or Dockerfile_go1 to build the image.
+
+The dockercontainer configuration should handle X11 forwarding well so you can open GUI programs inside the container (like gazebo). But I only tested the configuration on Ubuntu 20.04 with Nvidia GPU. If you are using other OS or GPU, you may need to modify the configuration.
+
 ### Source code
 
 The source code is hosted on GitHub: [qiayuanliao/legged_control](https://github.com/qiayuanliao/legged_control).

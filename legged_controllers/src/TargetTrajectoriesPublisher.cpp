@@ -10,26 +10,29 @@
 
 using namespace legged;
 
-namespace {
-scalar_t TARGET_DISPLACEMENT_VELOCITY;
-scalar_t TARGET_ROTATION_VELOCITY;
-scalar_t COM_HEIGHT;
-vector_t DEFAULT_JOINT_STATE(12);
-scalar_t TIME_TO_TARGET;
-}  // namespace
+namespace
+{
+  scalar_t TARGET_DISPLACEMENT_VELOCITY;
+  scalar_t TARGET_ROTATION_VELOCITY;
+  scalar_t COM_HEIGHT;
+  vector_t DEFAULT_JOINT_STATE(12);
+  scalar_t TIME_TO_TARGET;
+} // namespace
 
-scalar_t estimateTimeToTarget(const vector_t& desiredBaseDisplacement) {
-  const scalar_t& dx = desiredBaseDisplacement(0);
-  const scalar_t& dy = desiredBaseDisplacement(1);
-  const scalar_t& dyaw = desiredBaseDisplacement(3);
+scalar_t estimateTimeToTarget(const vector_t &desiredBaseDisplacement)
+{
+  const scalar_t &dx = desiredBaseDisplacement(0);
+  const scalar_t &dy = desiredBaseDisplacement(1);
+  const scalar_t &dyaw = desiredBaseDisplacement(3);
   const scalar_t rotationTime = std::abs(dyaw) / TARGET_ROTATION_VELOCITY;
   const scalar_t displacement = std::sqrt(dx * dx + dy * dy);
   const scalar_t displacementTime = displacement / TARGET_DISPLACEMENT_VELOCITY;
   return std::max(rotationTime, displacementTime);
 }
 
-TargetTrajectories targetPoseToTargetTrajectories(const vector_t& targetPose, const SystemObservation& observation,
-                                                  const scalar_t& targetReachingTime) {
+TargetTrajectories targetPoseToTargetTrajectories(const vector_t &targetPose, const SystemObservation &observation,
+                                                  const scalar_t &targetReachingTime)
+{
   // desired time trajectory
   const scalar_array_t timeTrajectory{observation.time, targetReachingTime};
 
@@ -48,9 +51,11 @@ TargetTrajectories targetPoseToTargetTrajectories(const vector_t& targetPose, co
   return {timeTrajectory, stateTrajectory, inputTrajectory};
 }
 
-TargetTrajectories goalToTargetTrajectories(const vector_t& goal, const SystemObservation& observation) {
+TargetTrajectories goalToTargetTrajectories(const vector_t &goal, const SystemObservation &observation)
+{
   const vector_t currentPose = observation.state.segment<6>(6);
-  const vector_t targetPose = [&]() {
+  const vector_t targetPose = [&]()
+  {
     vector_t target(6);
     target(0) = goal(0);
     target(1) = goal(1);
@@ -64,13 +69,15 @@ TargetTrajectories goalToTargetTrajectories(const vector_t& goal, const SystemOb
   return targetPoseToTargetTrajectories(targetPose, observation, targetReachingTime);
 }
 
-TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const SystemObservation& observation) {
+TargetTrajectories cmdVelToTargetTrajectories(const vector_t &cmdVel, const SystemObservation &observation)
+{
   const vector_t currentPose = observation.state.segment<6>(6);
   const Eigen::Matrix<scalar_t, 3, 1> zyx = currentPose.tail(3);
   vector_t cmdVelRot = getRotationMatrixFromZyxEulerAngles(zyx) * cmdVel.head(3);
 
   const scalar_t timeToTarget = TIME_TO_TARGET;
-  const vector_t targetPose = [&]() {
+  const vector_t targetPose = [&]()
+  {
     vector_t target(6);
     target(0) = currentPose(0) + cmdVelRot(0) * timeToTarget;
     target(1) = currentPose(1) + cmdVelRot(1) * timeToTarget;
@@ -89,7 +96,8 @@ TargetTrajectories cmdVelToTargetTrajectories(const vector_t& cmdVel, const Syst
   return trajectories;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
   const std::string robotName = "legged_robot";
 
   // Initialize ros node
@@ -98,8 +106,10 @@ int main(int argc, char** argv) {
   // Get node parameters
   std::string referenceFile;
   std::string taskFile;
+  std::string gaitFile;
   nodeHandle.getParam("/reference_file", referenceFile);
   nodeHandle.getParam("/task_file", taskFile);
+  nodeHandle.getParam("/gait_file", gaitFile);
 
   loadData::loadCppDataType(referenceFile, "comHeight", COM_HEIGHT);
   loadData::loadEigenMatrix(referenceFile, "defaultJointState", DEFAULT_JOINT_STATE);
@@ -107,7 +117,8 @@ int main(int argc, char** argv) {
   loadData::loadCppDataType(referenceFile, "targetDisplacementVelocity", TARGET_DISPLACEMENT_VELOCITY);
   loadData::loadCppDataType(taskFile, "mpc.timeHorizon", TIME_TO_TARGET);
 
-  TargetTrajectoriesPublisher target_pose_command(nodeHandle, robotName, &goalToTargetTrajectories, &cmdVelToTargetTrajectories);
+  std::cout << "gaitFile" << gaitFile << std::endl;
+  TargetTrajectoriesPublisher target_pose_command(nodeHandle, gaitFile, robotName, &goalToTargetTrajectories, &cmdVelToTargetTrajectories);
 
   ros::spin();
   // Successful exit
