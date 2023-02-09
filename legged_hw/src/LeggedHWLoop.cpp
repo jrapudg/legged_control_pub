@@ -28,6 +28,8 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   lastTime_ = Clock::now();
 
   // Setup loop thread
+    std::cout << "Setup loop thread" << std::endl;
+  loopRunning_ = true;
   loopThread_ = std::thread([&]() {
     while (loopRunning_) {
       if (loopRunning_) {
@@ -42,10 +44,10 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
         "are not set properly.).\n");
   }
 
-  loopRunning_ = true;
 }
 
 void LeggedHWLoop::update() {
+    // std::cout << "running LeggedHWLoop update" << std::endl;
   const auto currentTime = Clock::now();
   // Compute desired duration rounded to clock decimation
   const Duration desiredDuration(1.0 / loopHz_);

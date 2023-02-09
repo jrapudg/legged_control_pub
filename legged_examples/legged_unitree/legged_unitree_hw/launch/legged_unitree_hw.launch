@@ -10,6 +10,6 @@
 
     <param name="robot_type" value="$(arg robot_type)"/>
     <node name="legged_unitree_hw" pkg="legged_unitree_hw" type="legged_unitree_hw" respawn="false"
-          clear_params="true"/>
+          clear_params="true" output="screen" />
 
 </launch>

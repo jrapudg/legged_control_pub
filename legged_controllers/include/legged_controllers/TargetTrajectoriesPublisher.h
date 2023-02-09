@@ -96,14 +96,7 @@ class TargetTrajectoriesPublisher final {
         }
 
         try {
-          // get time
-          now = ros::Time::now();
-          dt = now - prev;
-          prev = now;
-          double dt_s = dt.toSec();
-
-          // joy update
-          rosJoy->processJoy(dt_s);
+          rosJoy->processJoy(0);
 
           vector_t cmdVel = vector_t::Zero(4);
           cmdVel[0] = rosJoy->joy_cmd_velx;
