@@ -6,7 +6,7 @@
 
 namespace legged {
 LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardware_interface)
-    : nh_(nh), hardwareInterface_(std::move(hardware_interface)) {
+    : nh_(nh), hardwareInterface_(std::move(hardware_interface)), loopRunning_(true) {
   // Create the controller manager
   controllerManager_.reset(new controller_manager::ControllerManager(hardwareInterface_.get(), nh_));
 
@@ -28,13 +28,9 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
   lastTime_ = Clock::now();
 
   // Setup loop thread
-    std::cout << "Setup loop thread" << std::endl;
-  loopRunning_ = true;
   loopThread_ = std::thread([&]() {
     while (loopRunning_) {
-      if (loopRunning_) {
-        update();
-      }
+      update();
     }
   });
   sched_param sched{.sched_priority = threadPriority};
@@ -43,7 +39,6 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
         "Failed to set threads priority (one possible reason could be that the user and the group permissions "
         "are not set properly.).\n");
   }
-
 }
 
 void LeggedHWLoop::update() {
