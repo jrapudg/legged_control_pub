@@ -3,6 +3,7 @@
 {
 	"name": "Ubuntu",
 	"image": "yyss2028/legged_control:go1",
+	// "image": "yyss2028/legged_control:a1",
 	// "build": {
 	// 	// "dockerfile": "Dockerfile_a1",
 	// 	"dockerfile": "Dockerfile_go1",
@@ -22,6 +23,7 @@
 		"--device=/dev/bus",
 		"--volume=/dev/serial:/dev/serial:ro",
 		"--name=legged_lqy_ctrl_container_go1",
+		// "--name=legged_lqy_ctrl_container_a1",
 		"-e",
 		"DISPLAY",
 		"-e",

@@ -22,12 +22,16 @@ https://user-images.githubusercontent.com/21256355/192135828-8fa7d9bb-9b4d-41f9-
 ### Docker version
 If you are using x86 64, directly use the devcontainer extension of VSCode to open the project. It will automatically load a docker image from dockerhub and give you all the environment.
 
+**very very important: depends on what robot you are using, modify devcontainer.json to have correct a1/go1 images or docker name**
+
 After the docker is built, do the following steps in the docker container:
 
 1. source ~/ocs2_ws/devel/setup.zsh
-2. source ~/legged_ctrl_ws/devel/setup.zsh
-3. sudo ldconfig
-4. Follow "Quick Start" below
+2. catkin config -DCMAKE_BUILD_TYPE=Release
+3. catkin build
+4. source ~/legged_ctrl_ws/devel/setup.zsh
+5. sudo ldconfig
+6. Follow "Quick Start" below
 
 If you are not using x86 64, you need to compile the dockerfile yourself. Modify file "devcontainer.json" to use either Dockerfile_a1 or Dockerfile_go1 to build the image.
 
