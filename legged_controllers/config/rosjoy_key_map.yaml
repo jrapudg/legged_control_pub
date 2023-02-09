@@ -3,13 +3,13 @@
 # - xbox controller has right updown axis as 4, right horizontal axis as 3
 # - nvidia controller has right updown axis as 5, right horizontal axis as 2
 
-joystick_left_updown_axis: 1 # the left joy stick updown axis
-joystick_left_horiz_axis: 0 # the left joy stick horizontal axis
-joystick_right_updown_axis: 4 # the right joy stick updown axis
-joystick_right_horiz_axis: 3 # the right joy stick horizontal axis
-joystick_mode_switch_button: 0 # the button A on the right side
-joystick_start_button: 4 # the lb button on the left side
-joystick_stop_button: 5 # the rb button on the right side
+joystick_left_updown_axis: 1 # the left joy stick updown axis,
+joystick_left_horiz_axis: 0 # the left joy stick horizontal axis,     control yaw rate
+joystick_right_updown_axis: 4 # the right joy stick updown axis,      control forward and backward
+joystick_right_horiz_axis: 3 # the right joy stick horizontal axis,   control left and right
+joystick_mode_switch_button: 0 # the button A on the right side,      switch stance/trot/flying_trot gaits
+joystick_start_button: 4 # the lb button on the left side,            start the controller (robot will standup)
+joystick_stop_button: 5 # the rb button on the right side,            stop the controller (robot will shutdown and fall down, so be careful to press stop after switching to stance mode)
 
 # joystick parameters
 joystick_velx_scale: 1.5 # m/s

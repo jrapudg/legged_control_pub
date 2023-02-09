@@ -31,7 +31,27 @@ After the docker is built, do the following steps in the docker container:
 3. catkin build
 4. source ~/legged_ctrl_ws/devel/setup.zsh
 5. sudo ldconfig
-6. Follow "Quick Start" below
+6. Run the simulation:
+
+```
+roslaunch legged_unitree_description empty_world.launch
+```
+
+Or on the robot hardware:
+
+```
+roslaunch legged_unitree_hw legged_unitree_hw.launch
+```
+
+7. Load the controller:
+
+```
+roslaunch legged_controllers load_controller.launch cheater:=false
+```
+**Unlike the steps in the original code, now you do not need to start the controller, you can directly use the joystick to start and stop the controller**. Please look at file "src/legged_controllers/config/rosjoy_key_map.yaml" to see the mapping of the joystick. As long as a joystick hardware is connected to the computer before starting the docker container, you can use the joystick to control the robot.
+
+
+
 
 If you are not using x86 64, you need to compile the dockerfile yourself. Modify file "devcontainer.json" to use either Dockerfile_a1 or Dockerfile_go1 to build the image.
 
