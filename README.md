@@ -48,7 +48,9 @@ roslaunch legged_unitree_hw legged_unitree_hw.launch
 ```
 roslaunch legged_controllers load_controller.launch cheater:=false
 ```
-**Unlike the steps in the original code, now you do not need to start the controller, you can directly use the joystick to start and stop the controller**. Please look at file "src/legged_controllers/config/rosjoy_key_map.yaml" to see the mapping of the joystick. As long as a joystick hardware is connected to the computer before starting the docker container, you can use the joystick to control the robot.
+**Unlike the steps in the original code, now you do not need to start the controller, you can directly use the joystick to start and stop the controller**. Please look at file "src/legged_controllers/config/rosjoy_key_map.yaml" to see the mapping of the joystick. 
+
+**Since different joystick products have different key mapping, so you need to modify rosjoy_key_map.yaml according to your specific joystick.** As long as a joystick hardware is connected to the computer before starting the docker container, you can use the joystick to control the robot.
 
 
 
