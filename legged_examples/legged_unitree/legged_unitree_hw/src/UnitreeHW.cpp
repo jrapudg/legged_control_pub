@@ -47,8 +47,8 @@ namespace legged
     //   return false;
     // }
 
-    ros::Publisher imu_pub = robot_hw_nh.advertise<sensor_msgs::Imu>("/unitree_hardware/imu", 100);
-    ros::Publisher joint_foot_pub = robot_hw_nh.advertise<sensor_msgs::JointState>("/unitree_hardware/joint_foot", 100);
+    imu_pub = robot_hw_nh.advertise<sensor_msgs::Imu>("/unitree_hardware/imu", 100);
+    joint_foot_pub = robot_hw_nh.advertise<sensor_msgs::JointState>("/unitree_hardware/joint_foot", 100);
 
     swap_joint_indices = {3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8};
     swap_foot_indices = {1, 0, 3, 2};
