@@ -47,5 +47,19 @@
             name="legged_robot_target"
             output="screen" />
 
+    <node pkg="rosbag" type="record" name="record" 
+        args="record -o /home/ControlUser/legged_ctrl_ws/src/bags/ 
+            /WT901_47_Data 
+            /WT901_48_Data 
+            /WT901_49_Data 
+            /WT901_50_Data 
+            /mocap_node/Go1_body/pose
+            /mocap_node/Go1_FL/pose
+            /mocap_node/Go1_FR/pose
+            /camera_forward/infra2/image_rect_raw
+            /camera_forward/infra1/image_rect_raw
+            /unitree_hardware/imu
+            /unitree_hardware/joint_foot
+        " />
 
 </launch>

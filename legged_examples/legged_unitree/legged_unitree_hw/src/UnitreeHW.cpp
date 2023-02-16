@@ -47,8 +47,8 @@ namespace legged
     //   return false;
     // }
 
-    ros::Publisher imu_pub = robot_hw_nh.advertise<sensor_msgs::Imu>("/unitree_hardware/imu", 100);
-    ros::Publisher joint_foot_pub = robot_hw_nh.advertise<sensor_msgs::JointState>("/unitree_hardware/joint_foot", 100);
+    imu_pub = robot_hw_nh.advertise<sensor_msgs::Imu>("/unitree_hardware/imu", 100);
+    joint_foot_pub = robot_hw_nh.advertise<sensor_msgs::JointState>("/unitree_hardware/joint_foot", 100);
 
     swap_joint_indices = {3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8};
     swap_foot_indices = {1, 0, 3, 2};
@@ -81,8 +81,14 @@ namespace legged
 
     for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i)
     {
+      // FR FL RR RL
       contactState_[i] = lowState_.footForce[i] > contactThreshold_;
     }
+
+    // contactState_[0] = lowState_.footForce[0] - 45 > contactThreshold_;
+    // contactState_[1] = lowState_.footForce[1] - 118 > contactThreshold_;
+    // contactState_[2] = lowState_.footForce[2] - 110 > contactThreshold_;
+    // contactState_[3] = lowState_.footForce[3] - 114 > contactThreshold_;
 
     // Set feedforward and velocity cmd to zero to avoid for safety when not controller setCommand
     std::vector<std::string> names = hybridJointInterface_.getNames();
@@ -129,7 +135,7 @@ namespace legged
     // read foot_force
     for (int i = 0; i < NUM_LEG; i++)
     {
-      int swap_i = swap_foot_indices[i];
+      int swap_i = swap_foot_indices[i]; // 1 0 3 2 (index of footForce) (FL FR RL RR) SO THE ORDER OF footForce is: FR FL RR RL
       joint_foot_msg.effort[NUM_DOF + i] = lowState_.footForce[swap_i];
     }
     joint_foot_pub.publish(joint_foot_msg);
