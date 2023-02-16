@@ -86,6 +86,9 @@ namespace legged
     UnitreeImuData imuData_{};
     bool contactState_[4]{}; // NOLINT(modernize-avoid-c-arrays)
 
+    double contactBias_[4]{};
+    bool first_contact_force_read;
+
     int powerLimit_{};
     int contactThreshold_{};
 

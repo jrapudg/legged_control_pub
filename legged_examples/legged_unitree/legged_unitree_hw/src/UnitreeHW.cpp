@@ -53,6 +53,9 @@ namespace legged
     swap_joint_indices = {3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8};
     swap_foot_indices = {1, 0, 3, 2};
 
+    // to record contact bias 
+    first_contact_force_read = false;
+
     return true;
   }
 
@@ -79,11 +82,23 @@ namespace legged
     imuData_.linearAcc_[1] = lowState_.imu.accelerometer[1];
     imuData_.linearAcc_[2] = lowState_.imu.accelerometer[2];
 
-    for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i)
-    {
-      // FR FL RR RL
-      contactState_[i] = lowState_.footForce[i] > contactThreshold_;
+    // a temporary logic for Go1, may not work well if the robot stands up initially. 
+    // record the first contact force reading as contact force bias 
+    if (first_contact_force_read == false) {
+      first_contact_force_read = true;
+      for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i)
+      {
+        // FR FL RR RL
+        contactBias_[i] = lowState_.footForce[i];
+      }
+    } else {
+      for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i)
+      {
+        // FR FL RR RL
+        contactState_[i] = lowState_.footForce[i] - contactBias_[i] > contactThreshold_;
+      }
     }
+
 
     // contactState_[0] = lowState_.footForce[0] - 45 > contactThreshold_;
     // contactState_[1] = lowState_.footForce[1] - 118 > contactThreshold_;
@@ -136,7 +151,7 @@ namespace legged
     for (int i = 0; i < NUM_LEG; i++)
     {
       int swap_i = swap_foot_indices[i]; // 1 0 3 2 (index of footForce) (FL FR RL RR) SO THE ORDER OF footForce is: FR FL RR RL
-      joint_foot_msg.effort[NUM_DOF + i] = lowState_.footForce[swap_i];
+      joint_foot_msg.effort[NUM_DOF + i] = lowState_.footForce[swap_i] - contactBias_[i];
     }
     joint_foot_pub.publish(joint_foot_msg);
   }
