@@ -217,6 +217,32 @@
   <gazebo reference="unitree_imu_joint">
     <disableFixedJointLumping>true</disableFixedJointLumping>
   </gazebo>
+  
+  <!-- add a payload link for computer and onboard battery -->
+  <joint name="unitree_payload_joint" type="fixed">
+    <origin rpy="0. 0. 0." xyz="0.08 0. 0.11"/>
+    <parent link="base"/>
+    <child link="unitree_payload"/>
+  </joint>
+  <link name="unitree_payload">
+    <inertial>
+      <mass value="3"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.00125" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.2 0.1 0.1"/>
+      </geometry>
+    </visual>
+    <material name="orange">
+      <color rgba="255 108 10 255"/>
+    </material>
+  </link>
+
+  <!-- add a payload link for computer and onboard battery -->
+  
   <joint name="RF_HAA" type="revolute">
     <origin rpy="0 0 0" xyz="0.1881 -0.04675 0"/>
     <parent link="base"/>
@@ -806,4 +832,3 @@
     </actuator>
   </transmission>
 </robot>
-
