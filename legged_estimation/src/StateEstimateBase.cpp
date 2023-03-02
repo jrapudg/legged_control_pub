@@ -6,69 +6,65 @@
 
 #include <ocs2_centroidal_model/FactoryFunctions.h>
 #include <ocs2_legged_robot/common/Types.h>
-#include <ocs2_legged_robot/gait/MotionPhaseDefinition.h>
+#include <ocs2_robotic_tools/common/RotationDerivativesTransforms.h>
 
 namespace legged {
 using namespace legged_robot;
 
 StateEstimateBase::StateEstimateBase(PinocchioInterface pinocchioInterface, CentroidalModelInfo info,
-                                     const PinocchioEndEffectorKinematics& eeKinematics, std::vector<HybridJointHandle> hybridJointHandles,
-                                     std::vector<ContactSensorHandle> contactSensorHandles,
-                                     hardware_interface::ImuSensorHandle imuSensorHandle)
+                                     const PinocchioEndEffectorKinematics& eeKinematics)
     : pinocchioInterface_(std::move(pinocchioInterface)),
       info_(std::move(info)),
       eeKinematics_(eeKinematics.clone()),
-      generalizedCoordinatesNum_(info_.generalizedCoordinatesNum),
-      rbdState_(2 * generalizedCoordinatesNum_),
-      hybridJointHandles_(std::move(hybridJointHandles)),
-      contactSensorHandles_(std::move(contactSensorHandles)),
-      imuSensorHandle_(std::move(imuSensorHandle)) {
+      rbdState_(vector_t ::Zero(2 * info_.generalizedCoordinatesNum)) {
   ros::NodeHandle nh;
   odomPub_.reset(new realtime_tools::RealtimePublisher<nav_msgs::Odometry>(nh, "odom", 10));
-  odomPub_->msg_.header.frame_id = "odom";
-  odomPub_->msg_.child_frame_id = "base";
 
   posePub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::PoseWithCovarianceStamped>(nh, "pose", 10));
-  posePub_->msg_.header.frame_id = "odom";
 }
 
-size_t StateEstimateBase::getMode() {
-  contact_flag_t contactFlag;
-  for (size_t i = 0; i < contactSensorHandles_.size(); ++i) {
-    contactFlag[i] = contactSensorHandles_[i].isContact();
-  }
-
-  return stanceLeg2ModeNumber(contactFlag);
+void StateEstimateBase::updateJointStates(const vector_t& jointPos, const vector_t& jointVel) {
+  rbdState_.segment(6, info_.actuatedDofNum) = jointPos;
+  rbdState_.segment(6 + info_.generalizedCoordinatesNum, info_.actuatedDofNum) = jointVel;
 }
 
-void StateEstimateBase::updateAngular(const Eigen::Quaternion<scalar_t>& quat, const vector_t& angularVel) {
-  rbdState_.segment<3>(0) = quatToZyx(quat);
-  rbdState_.segment<3>(generalizedCoordinatesNum_) = angularVel;
+void StateEstimateBase::updateImu(const Eigen::Quaternion<scalar_t>& quat, const vector3_t& angularVelLocal,
+                                  const vector3_t& linearAccelLocal, const matrix3_t& orientationCovariance,
+                                  const matrix3_t& angularVelCovariance, const matrix3_t& linearAccelCovariance) {
+  quat_ = quat;
+  angularVelLocal_ = angularVelLocal;
+  linearAccelLocal_ = linearAccelLocal;
+  orientationCovariance_ = orientationCovariance;
+  angularVelCovariance_ = angularVelCovariance;
+  linearAccelCovariance_ = linearAccelCovariance;
+
+  vector3_t zyx = quatToZyx(quat) - zyxOffset_;
+  vector3_t angularVelGlobal = getGlobalAngularVelocityFromEulerAnglesZyxDerivatives<scalar_t>(
+      zyx, getEulerAnglesZyxDerivativesFromLocalAngularVelocity<scalar_t>(quatToZyx(quat), angularVelLocal));
+  updateAngular(zyx, angularVelGlobal);
+}
+
+void StateEstimateBase::updateAngular(const vector3_t& zyx, const vector_t& angularVel) {
+  rbdState_.segment<3>(0) = zyx;
+  rbdState_.segment<3>(info_.generalizedCoordinatesNum) = angularVel;
 }
 
 void StateEstimateBase::updateLinear(const vector_t& pos, const vector_t& linearVel) {
   rbdState_.segment<3>(3) = pos;
-  rbdState_.segment<3>(generalizedCoordinatesNum_ + 3) = linearVel;
+  rbdState_.segment<3>(info_.generalizedCoordinatesNum + 3) = linearVel;
 }
 
-void StateEstimateBase::updateJointStates() {
-  for (size_t i = 0; i < hybridJointHandles_.size(); ++i) {
-    rbdState_(6 + i) = hybridJointHandles_[i].getPosition();
-    rbdState_(generalizedCoordinatesNum_ + 6 + i) = hybridJointHandles_[i].getVelocity();
-  }
-}
-
-void StateEstimateBase::publishMsgs(const nav_msgs::Odometry& odom, const ros::Time& time) {
-  scalar_t publishRate = 100;
+void StateEstimateBase::publishMsgs(const nav_msgs::Odometry& odom) {
+  ros::Time time = odom.header.stamp;
+  scalar_t publishRate = 200;
   if (lastPub_ + ros::Duration(1. / publishRate) < time) {
+    lastPub_ = time;
     if (odomPub_->trylock()) {
-      odomPub_->msg_.header.stamp = time;
-      odomPub_->msg_.pose = odom.pose;
-      odomPub_->msg_.twist = odom.twist;
+      odomPub_->msg_ = odom;
       odomPub_->unlockAndPublish();
     }
     if (posePub_->trylock()) {
-      posePub_->msg_.header.stamp = time;
+      posePub_->msg_.header = odom.header;
       posePub_->msg_.pose = odom.pose;
       posePub_->unlockAndPublish();
     }

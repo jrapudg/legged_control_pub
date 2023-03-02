@@ -98,10 +98,10 @@ int main(int argc, char** argv) {
   // Get node parameters
   std::string referenceFile;
   std::string taskFile;
-  std::string gaitFile;
-  nodeHandle.getParam("/reference_file", referenceFile);
-  nodeHandle.getParam("/task_file", taskFile);
-  nodeHandle.getParam("/gait_file", gaitFile);
+  std::string gaitCommandFile;
+  nodeHandle.getParam("/referenceFile", referenceFile);
+  nodeHandle.getParam("/taskFile", taskFile);
+  nodeHandle.getParam("/gaitCommandFile", gaitCommandFile);
 
   loadData::loadCppDataType(referenceFile, "comHeight", COM_HEIGHT);
   loadData::loadEigenMatrix(referenceFile, "defaultJointState", DEFAULT_JOINT_STATE);
@@ -109,8 +109,9 @@ int main(int argc, char** argv) {
   loadData::loadCppDataType(referenceFile, "targetDisplacementVelocity", TARGET_DISPLACEMENT_VELOCITY);
   loadData::loadCppDataType(taskFile, "mpc.timeHorizon", TIME_TO_TARGET);
 
-  std::cout << "gaitFile" << gaitFile << std::endl;
-  TargetTrajectoriesPublisher target_pose_command(nodeHandle, gaitFile, robotName, &goalToTargetTrajectories, &cmdVelToTargetTrajectories);
+  std::cout << "gaitCommandFile" << gaitCommandFile << std::endl;
+  TargetTrajectoriesPublisher target_pose_command(nodeHandle, gaitCommandFile, robotName, &goalToTargetTrajectories,
+                                                  &cmdVelToTargetTrajectories);
 
   ros::spin();
   // Successful exit

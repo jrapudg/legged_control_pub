@@ -31,8 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ocs2_core/constraint/StateInputConstraint.h>
 
-#include "ocs2_legged_robot/constraint/EndEffectorLinearConstraint.h"
-#include "ocs2_legged_robot/reference_manager/SwitchedModelReferenceManager.h"
+#include "legged_interface/SwitchedModelReferenceManager.h"
+#include "legged_interface/constraint/EndEffectorLinearConstraint.h"
 
 namespace ocs2 {
 namespace legged_robot {
