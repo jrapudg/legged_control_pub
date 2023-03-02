@@ -12,11 +12,13 @@ joystick_start_button: 4 # the lb button on the left side,            start the 
 joystick_stop_button: 5 # the rb button on the right side,            stop the controller (robot will shutdown and fall down, so be careful to press stop after switching to stance mode)
 
 # joystick parameters
-joystick_velx_scale: 1.5 # m/s
+joystick_velx_scale: 0.9 # m/s
 joystick_vely_scale: 0.3 # m/s
 joystick_height_vel: 0.1 # m/s
 joystick_max_height: 0.30 # m
 joystick_min_height: 0.03 # m
-joystick_yaw_rate_scale: 0.3 # rad/s
+joystick_yaw_rate_scale: 0.6 # rad/s
 joystick_roll_rate_scale: 0.4 # rad/s
 joystick_pitch_rate_scale: 0.4 # rad/s
+
+joystick_smooth_coeffi: 0.8 # smooth the input

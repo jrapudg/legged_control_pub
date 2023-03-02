@@ -53,6 +53,8 @@ class ROSJoyProcessor {
     _nh.param("/joystick_roll_rate_scale", joystick_roll_rate_scale, 0.4);
     _nh.param("/joystick_pitch_rate_scale", joystick_pitch_rate_scale, 0.4);
 
+    _nh.param("/joystick_smooth_coeffi", joystick_smooth_coeffi, 0.8);
+
     ocs2::loadData::loadStdVector(gaitFile, "list", gaitList_, false);
     gaitMap_.clear();
     for (const auto& gaitName : gaitList_) {
@@ -103,9 +105,11 @@ class ROSJoyProcessor {
     }
 
     // right updown
-    joy_cmd_velx = joy_msg->axes[joystick_right_updown_axis] * joystick_velx_scale;
+    double tmp = joy_msg->axes[joystick_right_updown_axis] * joystick_velx_scale;
+    joy_cmd_velx = joystick_smooth_coeffi * joy_cmd_velx + (1.0 - joystick_smooth_coeffi) * tmp;
     // right horiz
-    joy_cmd_vely = joy_msg->axes[joystick_right_horiz_axis] * joystick_vely_scale;
+    tmp = joy_msg->axes[joystick_right_horiz_axis] * joystick_vely_scale;
+    joy_cmd_vely = joystick_smooth_coeffi * joy_cmd_vely + (1.0 - joystick_smooth_coeffi) * tmp;
     // left updown
     joy_cmd_velz = joy_msg->axes[joystick_left_updown_axis] * joystick_height_vel;
     // left horiz
@@ -183,4 +187,6 @@ class ROSJoyProcessor {
   double joystick_yaw_rate_scale;
   double joystick_roll_rate_scale;
   double joystick_pitch_rate_scale;
+
+  double joystick_smooth_coeffi;
 };
