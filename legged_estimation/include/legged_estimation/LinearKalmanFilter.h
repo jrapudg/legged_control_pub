@@ -19,17 +19,33 @@ using namespace ocs2;
 
 class KalmanFilterEstimate : public StateEstimateBase {
  public:
-  KalmanFilterEstimate(PinocchioInterface pinocchioInterface, CentroidalModelInfo info, const PinocchioEndEffectorKinematics& eeKinematics,
-                       const std::vector<HybridJointHandle>& hybridJointHandles,
-                       const std::vector<ContactSensorHandle>& contactSensorHandles,
-                       const hardware_interface::ImuSensorHandle& imuSensorHandle);
+  KalmanFilterEstimate(PinocchioInterface pinocchioInterface, CentroidalModelInfo info, const PinocchioEndEffectorKinematics& eeKinematics);
+
   vector_t update(const ros::Time& time, const ros::Duration& period) override;
 
- private:
+  void loadSettings(const std::string& taskFile, bool verbose);
+
+ protected:
   void updateFromTopic();
 
   void callback(const nav_msgs::Odometry::ConstPtr& msg);
 
+  nav_msgs::Odometry getOdomMsg();
+
+  feet_array_t<scalar_t> footHeights_;
+  feet_array_t<scalar_t> footHeightBias_;
+  contact_flag_t lastContact_;
+
+  // Config
+  scalar_t footRadius_ = 0.02;
+  scalar_t imuProcessNoisePosition_ = 0.02;
+  scalar_t imuProcessNoiseVelocity_ = 0.02;
+  scalar_t footProcessNoisePosition_ = 0.002;
+  scalar_t footSensorNoisePosition_ = 0.005;
+  scalar_t footSensorNoiseVelocity_ = 0.1;
+  scalar_t footHeightSensorNoise_ = 0.01;
+
+ private:
   Eigen::Matrix<scalar_t, 18, 1> xHat_;
   Eigen::Matrix<scalar_t, 12, 1> ps_;
   Eigen::Matrix<scalar_t, 12, 1> vs_;
@@ -39,9 +55,6 @@ class KalmanFilterEstimate : public StateEstimateBase {
   Eigen::Matrix<scalar_t, 28, 28> r_;
   Eigen::Matrix<scalar_t, 18, 3> b_;
   Eigen::Matrix<scalar_t, 28, 18> c_;
-
-  scalar_t footRadius_ = 0.02;
-  vector_t feetHeights_;
 
   // Topic
   ros::Subscriber sub_;

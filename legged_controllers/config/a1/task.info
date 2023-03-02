@@ -12,7 +12,7 @@ model_settings
 
   verboseCppAd                  true
   recompileLibrariesCppAd       false
-  modelFolderCppAd              /tmp/legged_control
+  modelFolderCppAd              /tmp/legged_control/a1
 }
 
 swing_trajectory_config
@@ -20,7 +20,6 @@ swing_trajectory_config
   liftOffVelocity               0.05
   touchDownVelocity            -0.05
   swingHeight                   0.08
-  touchdownAfterHorizon         0.2
   swingTimeScale                0.15
 }
 
@@ -305,4 +304,16 @@ weight
     swingLeg        100
     baseAccel       1
     contactForce    0.01
+}
+
+; State Estimation
+kalmanFilter
+{
+    footRadius                  0.02
+    imuProcessNoisePosition     0.02
+    imuProcessNoiseVelocity     0.02
+    footProcessNoisePosition    0.002
+    footSensorNoisePosition     0.005
+    footSensorNoiseVelocity     0.1
+    footHeightSensorNoise       0.01
 }
