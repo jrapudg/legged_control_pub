@@ -56,7 +56,7 @@ bool UnitreeHW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) {
   return true;
 }
 
-void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
+void UnitreeHW::read(const ros::Time& currTime /*time*/, const ros::Duration& /*period*/) {
   udp_->Recv();
   udp_->GetRecv(lowState_);
 
@@ -80,22 +80,24 @@ void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/)
   // a temporary logic for Go1, may not work well if the robot stands up
   // initially. record the first contact force reading as contact force bias
   if (first_contact_force_read == false) {
+    initTime = currTime;
     first_contact_force_read = true;
-    for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
-      // FR FL RR RL
-      contactBias_[i] = lowState_.footForce[i];
-    }
   } else {
-    for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
-      // FR FL RR RL
-      contactState_[i] = lowState_.footForce[i] - contactBias_[i] > contactThreshold_;
+    ros::Duration elapsedTime = (currTime - initTime);
+    double timeSinceStart = elapsedTime.toSec();
+
+    if (timeSinceStart < 0.5) {
+      for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
+        contactBias_[i] = lowState_.footForce[i];
+        contactState_[i] = 0;
+      }
+    } else {
+      for (size_t i = 0; i < CONTACT_SENSOR_NAMES.size(); ++i) {
+        // FR FL RR RL
+        contactState_[i] = (lowState_.footForce[i] - contactBias_[i]) > contactThreshold_;
+      }
     }
   }
-
-  // contactState_[0] = lowState_.footForce[0] - 45 > contactThreshold_;
-  // contactState_[1] = lowState_.footForce[1] - 118 > contactThreshold_;
-  // contactState_[2] = lowState_.footForce[2] - 110 > contactThreshold_;
-  // contactState_[3] = lowState_.footForce[3] - 114 > contactThreshold_;
 
   // Set feedforward and velocity cmd to zero to avoid for safety when not
   // controller setCommand
@@ -133,13 +135,14 @@ void UnitreeHW::read(const ros::Time& /*time*/, const ros::Duration& /*period*/)
     int swap_i = swap_joint_indices[i];
     joint_foot_msg.position[i] = lowState_.motorState[swap_i].q;
     joint_foot_msg.velocity[i] = lowState_.motorState[swap_i].dq;
+    joint_foot_msg.effort[i] = lowState_.motorState[swap_i].tauEst;
   }
 
   // read foot_force
   for (int i = 0; i < NUM_LEG; i++) {
     int swap_i = swap_foot_indices[i];  // 1 0 3 2 (index of footForce) (FL FR RL RR) SO
                                         // THE ORDER OF footForce is: FR FL RR RL
-    joint_foot_msg.effort[NUM_DOF + i] = lowState_.footForce[swap_i] - contactBias_[i];
+    joint_foot_msg.effort[NUM_DOF + i] = lowState_.footForce[swap_i] - contactBias_[swap_i];
   }
   joint_foot_pub.publish(joint_foot_msg);
 }

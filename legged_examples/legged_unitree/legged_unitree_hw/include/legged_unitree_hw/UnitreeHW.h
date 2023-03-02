@@ -84,6 +84,7 @@ class UnitreeHW : public LeggedHW {
 
   double contactBias_[4]{};
   bool first_contact_force_read;
+  ros::Time initTime;
 
   int powerLimit_{};
   int contactThreshold_{};
