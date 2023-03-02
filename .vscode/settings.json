@@ -60,5 +60,6 @@
         "typeinfo": "cpp",
         "__nullptr": "cpp",
         "__locale": "cpp"
-    }
+    },
+    "clang-format.executable": "/usr/local/share/cmake_clang_tools/.clang-format"
 }

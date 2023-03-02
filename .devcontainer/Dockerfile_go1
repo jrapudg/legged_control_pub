@@ -53,7 +53,8 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-roslint \
     ros-${ROS_DISTRO}-rqt-controller-manager \
     ros-${ROS_DISTRO}-xacro \
-    clang-format-10
+    clang-format \
+    clang-tidy
 
 # ocs2 dependencies
 RUN sudo apt-get update \
@@ -171,26 +172,26 @@ RUN ls $UNITREE_WS/src/unitree_ros && \
 
 
 # casadi 
-# WORKDIR $SUPPORT_WS
-# RUN git clone https://github.com/casadi/casadi.git && \
-#     cd ${SUPPORT_WS}/casadi && git checkout tags/3.5.5 && \
-#     mkdir ${SUPPORT_WS}/casadi/build && cd ${SUPPORT_WS}/casadi/build && \
-#     cmake -DWITH_CPLEX=OFF -DWITH_KNITRO=OFF -DWITH_OOQP=OFF -DWITH_SNOPT=OFF ${SUPPORT_WS}/casadi && \
-#     make -j${USE_PROC} && \
-#     sudo make install
+WORKDIR $SUPPORT_WS
+RUN git clone https://github.com/casadi/casadi.git && \
+    cd ${SUPPORT_WS}/casadi && git checkout tags/3.5.5 && \
+    mkdir ${SUPPORT_WS}/casadi/build && cd ${SUPPORT_WS}/casadi/build && \
+    cmake -DWITH_CPLEX=OFF -DWITH_KNITRO=OFF -DWITH_OOQP=OFF -DWITH_SNOPT=OFF ${SUPPORT_WS}/casadi && \
+    make -j${USE_PROC} && \
+    sudo make install
 # /usr/local/lib/casadi/
 # /usr/local/include/casadi
 
 # filter for 
-# WORKDIR $SUPPORT_WS
-# RUN git clone https://github.com/ShuoYangRobotics/gram_savitzky_golay.git
-# WORKDIR ${SUPPORT_WS}/gram_savitzky_golay 
-# RUN git submodule init && \
-#     git submodule update && \
-#     mkdir build 
-# WORKDIR ${SUPPORT_WS}/gram_savitzky_golay/build
-# RUN cmake -DCMAKE_BUILD_TYPE=Release ../ && \
-#     make -j${USE_PROC} && sudo make install
+WORKDIR $SUPPORT_WS
+RUN git clone https://github.com/ShuoYangRobotics/gram_savitzky_golay.git
+WORKDIR ${SUPPORT_WS}/gram_savitzky_golay 
+RUN git submodule init && \
+    git submodule update && \
+    mkdir build 
+WORKDIR ${SUPPORT_WS}/gram_savitzky_golay/build
+RUN cmake -DCMAKE_BUILD_TYPE=Release ../ && \
+    make -j${USE_PROC} && sudo make install
 
 # install ocs2 
 
@@ -231,6 +232,12 @@ RUN /bin/zsh -c "source ${OCS2_WS}/devel/setup.zsh" && echo "source /home/${USER
 
 
 RUN echo "export ROBOT_TYPE=go1" >> ~/.zshrc
+
+# install cmake tools 
+WORKDIR $SUPPORT_WS
+RUN git clone https://github.com/ANYbotics/cmake_clang_tools.git
+RUN cd cmake_clang_tools && mkdir -p build && cd build && cmake ../ && make && sudo make install
+
 # config zsh 
 CMD ["/bin/zsh"]
 ENV SHELL /bin/zsh

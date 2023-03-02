@@ -5,7 +5,7 @@
 
       <arg name="task_file" default="$(find legged_controllers)/config/task.info" />
       <arg name="reference_file" default="$(find legged_controllers)/config/reference.info" />
-      <arg name="urdf_file" default="$(find legged_unitree_description)/urdf/go1.urdf" />
+      <arg name="urdf_file" default="$(find legged_unitree_description)/urdf/go1_payload.urdf" />
       <arg name="gait_file" default="$(find legged_controllers)/config/gait.info" />
 
       <!-- make the files into global parameters -->
@@ -47,8 +47,8 @@
             name="legged_robot_target"
             output="screen" />
 
-    <node pkg="rosbag" type="record" name="record" 
-        args="record -o /home/ControlUser/legged_ctrl_ws/src/bags/ 
+      <node pkg="rosbag" type="record" name="record"
+            args="record -o /home/ControlUser/legged_ctrl_ws/src/bags/ 
             /WT901_47_Data 
             /WT901_48_Data 
             /WT901_49_Data 

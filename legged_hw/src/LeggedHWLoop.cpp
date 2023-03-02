@@ -42,7 +42,7 @@ LeggedHWLoop::LeggedHWLoop(ros::NodeHandle& nh, std::shared_ptr<LeggedHW> hardwa
 }
 
 void LeggedHWLoop::update() {
-    // std::cout << "running LeggedHWLoop update" << std::endl;
+  // std::cout << "running LeggedHWLoop update" << std::endl;
   const auto currentTime = Clock::now();
   // Compute desired duration rounded to clock decimation
   const Duration desiredDuration(1.0 / loopHz_);

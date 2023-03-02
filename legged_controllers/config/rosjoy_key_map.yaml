@@ -13,10 +13,10 @@ joystick_stop_button: 5 # the rb button on the right side,            stop the c
 
 # joystick parameters
 joystick_velx_scale: 1.5 # m/s
-joystick_vely_scale: 0.4 # m/s
+joystick_vely_scale: 0.3 # m/s
 joystick_height_vel: 0.1 # m/s
 joystick_max_height: 0.30 # m
 joystick_min_height: 0.03 # m
-joystick_yaw_rate_scale: 0.8 # rad/s
+joystick_yaw_rate_scale: 0.3 # rad/s
 joystick_roll_rate_scale: 0.4 # rad/s
 joystick_pitch_rate_scale: 0.4 # rad/s

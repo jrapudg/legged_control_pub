@@ -2,16 +2,15 @@
 // Created by qiayuan on 2022/7/24.
 //
 
-#include <pinocchio/fwd.hpp>
-
-#include <pinocchio/algorithm/frames.hpp>
-#include <pinocchio/algorithm/kinematics.hpp>
-
-#include "legged_estimation/LinearKalmanFilter.h"
-
 #include <ocs2_legged_robot/common/Types.h>
 #include <ocs2_robotic_tools/common/RotationDerivativesTransforms.h>
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
+
+#include <pinocchio/algorithm/frames.hpp>
+#include <pinocchio/algorithm/kinematics.hpp>
+#include <pinocchio/fwd.hpp>
+
+#include "legged_estimation/LinearKalmanFilter.h"
 
 namespace legged {
 
@@ -97,7 +96,8 @@ vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration
   vPino.setZero();
   vPino.segment<3>(3) = getEulerAnglesZyxDerivativesFromGlobalAngularVelocity<scalar_t>(
       qPino.segment<3>(3),
-      rbdState_.segment<3>(info_.generalizedCoordinatesNum));  // Only set angular velocity, let linear velocity be zero
+      rbdState_.segment<3>(info_.generalizedCoordinatesNum));  // Only set angular velocity,
+                                                               // let linear velocity be zero
   vPino.tail(actuatedDofNum) = rbdState_.segment(6 + generalizedCoordinatesNum_, actuatedDofNum);
 
   pinocchio::forwardKinematics(model, data, qPino, vPino);
@@ -194,7 +194,8 @@ vector_t KalmanFilterEstimate::update(const ros::Time& time, const ros::Duration
       odom.pose.covariance[6 * (3 + i) + (3 + j)] = imuSensorHandle_.getOrientationCovariance()[i * 3 + j];
     }
   }
-  //  The twist in this message should be specified in the coordinate frame given by the child_frame_id: "base"
+  //  The twist in this message should be specified in the coordinate frame
+  //  given by the child_frame_id: "base"
   vector_t twist = getRotationMatrixFromZyxEulerAngles(quatToZyx(quat)).transpose() * xHat_.segment<3>(3);
   odom.twist.twist.linear.x = twist.x();
   odom.twist.twist.linear.y = twist.y();
