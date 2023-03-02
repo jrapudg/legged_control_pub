@@ -22,6 +22,7 @@
     <xacro:property name="calf_width" value="0.016" />
     <xacro:property name="calf_height" value="0.016" />
     <xacro:property name="foot_radius" value="0.02" />
+    <xacro:property name="calf_x_offset" value="0.0" />
     <xacro:property name="stick_radius" value="0.01" />
     <xacro:property name="stick_length" value="0.2" />
 

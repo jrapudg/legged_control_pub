@@ -8,6 +8,9 @@
 
       <!-- make the files into global parameters -->
       <param name="urdfFile" value="/tmp/legged_control/$(arg robot_type).urdf" />
+      <!-- <arg name="urdfFile" default="$(find legged_unitree_description)/urdf/go1_payload.urdf"
+      /> -->
+      <!-- <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go1.urdf" /> -->
       <param name="taskFile" value="$(find legged_controllers)/config/$(arg robot_type)/task.info" />
       <param name="referenceFile"
             value="$(find legged_controllers)/config/$(arg robot_type)/reference.info" />
