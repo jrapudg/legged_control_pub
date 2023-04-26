@@ -61,5 +61,6 @@
         "__nullptr": "cpp",
         "__locale": "cpp"
     },
-    "clang-format.executable": "/usr/local/share/cmake_clang_tools/.clang-format"
+    "clang-format.executable": "/usr/local/share/cmake_clang_tools/.clang-format",
+    "ros.distro": "humble"
 }
