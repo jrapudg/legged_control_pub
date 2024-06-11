@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
         legged_interface
         legged_wbc
         legged_estimation
+        unitree_legged_msgs
         controller_interface
         ocs2_legged_robot_ros
         ocs2_self_collision_visualization
@@ -28,6 +29,7 @@ catkin_package(
         CATKIN_DEPENDS
         roscpp
         legged_common
+        unitree_legged_msgs
         legged_interface
         legged_wbc
         legged_estimation

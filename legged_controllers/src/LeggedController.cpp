@@ -73,7 +73,26 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   // Safety Checker
   safetyChecker_ = std::make_shared<SafetyChecker>(leggedInterface_->getCentroidalModelInfo());
 
+  jointSubscribers.resize(12);
+  // Create subscribers for each joint
+  for (size_t i = 0; i < 12; ++i) {
+    std::string topicName = "/joint_" + std::to_string(i) + "_data";
+    ROS_INFO("Subscribing to topic: %s", topicName.c_str());
+    jointSubscribers[i] = controller_nh.subscribe<unitree_legged_msgs::MotorCmd>(
+        topicName, 1, [this, i](const unitree_legged_msgs::MotorCmd::ConstPtr& msg) { jointDataCallback(*msg, i); });
+  }
   return true;
+}
+
+// Callback function for receiving joint data
+void LeggedController::jointDataCallback(const unitree_legged_msgs::MotorCmd& msg, size_t jointIndex) {
+  double posDes = msg.q;
+  double velDes = msg.dq;
+  double torque = msg.tau;
+  double kp = msg.Kp;
+  double kd = msg.Kd;
+
+  hybridJointHandles_[jointIndex].setCommand(posDes, velDes, kp, kd, torque);
 }
 
 void LeggedController::starting(const ros::Time& time) {
@@ -131,17 +150,17 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
     stopRequest(time);
   }
 
-  vector_t posDos(12);
-  vector_t velDesFake(12);
-  vector_t torqo(12);
-  torqo << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-  velDesFake << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-  posDos << 0.7, 0.745186, -1.6016, 0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601;
+  // vector_t posDos(12);
+  // vector_t velDesFake(12);
+  // vector_t torqo(12);
+  // torqo << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  // velDesFake << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  // posDos << 0.7, 0.745186, -1.6016, 0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601;
 
-  for (size_t j = 0; j < leggedInterface_->getCentroidalModelInfo().actuatedDofNum; ++j) {
-    hybridJointHandles_[j].setCommand(posDos(j), velDesFake(j), 30, 3, torque(j));
-    std::cout << "Joint " << j << ": posDos = " << posDos(j) << ", velDes = " << velDesFake(j) << ", torque = " << torqo(j) << std::endl;
-  }
+  // for (size_t j = 0; j < leggedInterface_->getCentroidalModelInfo().actuatedDofNum; ++j) {
+  //   hybridJointHandles_[j].setCommand(posDos(j), velDesFake(j), 30, 3, torque(j));
+  //   std::cout << "Joint " << j << ": posDos = " << posDos(j) << ", velDes = " << velDesFake(j) << ", torque = " << torqo(j) << std::endl;
+  // }
 
   // Visualization
   robotVisualizer_->update(currentObservation_, mpcMrtInterface_->getPolicy(), mpcMrtInterface_->getCommand());

@@ -20,6 +20,8 @@
 #include "legged_controllers/SafetyChecker.h"
 #include "legged_controllers/visualization/LeggedSelfCollisionVisualization.h"
 
+#include "unitree_legged_msgs/MotorCmd.h"
+
 namespace legged {
 using namespace ocs2;
 using namespace legged_robot;
@@ -33,6 +35,7 @@ class LeggedController : public controller_interface::MultiInterfaceController<H
   void update(const ros::Time& time, const ros::Duration& period) override;
   void starting(const ros::Time& time) override;
   void stopping(const ros::Time& /*time*/) override { mpcRunning_ = false; }
+  void jointDataCallback(const unitree_legged_msgs::MotorCmd& msg, size_t jointIndex);
 
  protected:
   virtual void updateStateEstimation(const ros::Time& time, const ros::Duration& period);
@@ -70,6 +73,7 @@ class LeggedController : public controller_interface::MultiInterfaceController<H
   ros::Publisher observationPublisher_;
 
  private:
+  std::vector<ros::Subscriber> jointSubscribers;
   std::thread mpcThread_;
   std::atomic_bool controllerRunning_{}, mpcRunning_{};
   benchmark::RepeatedTimer mpcTimer_;
