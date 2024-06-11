@@ -131,8 +131,16 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
     stopRequest(time);
   }
 
+  vector_t posDos(12);
+  vector_t velDesFake(12);
+  vector_t torqo(12);
+  torqo << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  velDesFake << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  posDos << 0.7, 0.745186, -1.6016, 0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601, -0.7, 0.745186, -1.601;
+
   for (size_t j = 0; j < leggedInterface_->getCentroidalModelInfo().actuatedDofNum; ++j) {
-    hybridJointHandles_[j].setCommand(posDes(j), velDes(j), 0, 3, torque(j));
+    hybridJointHandles_[j].setCommand(posDos(j), velDesFake(j), 30, 3, torque(j));
+    std::cout << "Joint " << j << ": posDos = " << posDos(j) << ", velDes = " << velDesFake(j) << ", torque = " << torqo(j) << std::endl;
   }
 
   // Visualization

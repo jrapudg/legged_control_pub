@@ -149,11 +149,14 @@ void UnitreeHW::read(const ros::Time& currTime /*time*/, const ros::Duration& /*
 
 void UnitreeHW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
   for (int i = 0; i < 12; ++i) {
+    lowCmd_.motorCmd[i].mode = 0x0A;
     lowCmd_.motorCmd[i].q = static_cast<float>(jointData_[i].posDes_);
-    lowCmd_.motorCmd[i].dq = static_cast<float>(jointData_[i].velDes_);
+    lowCmd_.motorCmd[i].dq = 0;
+    // lowCmd_.motorCmd[i].dq = static_cast<float>(jointData_[i].velDes_);
     lowCmd_.motorCmd[i].Kp = static_cast<float>(jointData_[i].kp_);
     lowCmd_.motorCmd[i].Kd = static_cast<float>(jointData_[i].kd_);
-    lowCmd_.motorCmd[i].tau = static_cast<float>(jointData_[i].ff_);
+    lowCmd_.motorCmd[i].tau = 0;
+    // lowCmd_.motorCmd[i].tau = static_cast<float>(jointData_[i].ff_);
   }
   safety_->PositionLimit(lowCmd_);
   safety_->PowerProtect(lowCmd_, lowState_, powerLimit_);
