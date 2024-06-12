@@ -74,9 +74,13 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   safetyChecker_ = std::make_shared<SafetyChecker>(leggedInterface_->getCentroidalModelInfo());
 
   jointSubscribers.resize(12);
+
+  std::vector<std::string> joint_cmd{"FL_hip", "FL_thigh", "FL_calf", "RL_hip", "RL_thigh", "RL_calf",
+                                     "FR_hip", "FR_thigh", "FR_calf", "RR_hip", "RR_thigh", "RR_calf"};
+
   // Create subscribers for each joint
   for (size_t i = 0; i < 12; ++i) {
-    std::string topicName = "/joint_" + std::to_string(i) + "_data";
+    std::string topicName = "/joint_controller_" + joint_cmd[i] + "/cmd";
     ROS_INFO("Subscribing to topic: %s", topicName.c_str());
     jointSubscribers[i] = controller_nh.subscribe<unitree_legged_msgs::MotorCmd>(
         topicName, 1, [this, i](const unitree_legged_msgs::MotorCmd::ConstPtr& msg) { jointDataCallback(*msg, i); });
