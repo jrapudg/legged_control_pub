@@ -74,6 +74,7 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   safetyChecker_ = std::make_shared<SafetyChecker>(leggedInterface_->getCentroidalModelInfo());
 
   jointSubscribers.resize(12);
+  jointStatePublisher.resize(12);
 
   std::vector<std::string> joint_cmd{"FL_hip", "FL_thigh", "FL_calf", "RL_hip", "RL_thigh", "RL_calf",
                                      "FR_hip", "FR_thigh", "FR_calf", "RR_hip", "RR_thigh", "RR_calf"};
@@ -85,6 +86,12 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
     jointSubscribers[i] = controller_nh.subscribe<unitree_legged_msgs::MotorCmd>(
         topicName, 1, [this, i](const unitree_legged_msgs::MotorCmd::ConstPtr& msg) { jointDataCallback(*msg, i); });
   }
+
+  for (size_t i = 0; i < 12; ++i) {
+    std::string state_topic_name = "/joint_controller_" + joint_cmd[i] + "/state";
+    jointStatePublisher[i] = nh.advertise<unitree_legged_msgs::MotorState>(state_topic_name, 10);
+  }
+
   return true;
 }
 
@@ -122,6 +129,14 @@ void LeggedController::starting(const ros::Time& time) {
 }
 
 void LeggedController::update(const ros::Time& time, const ros::Duration& period) {
+  // Publish joint states
+  for (int i = 0; i < 12; ++i) {
+    unitree_legged_msgs::MotorState joint_msg;
+    joint_msg.q = hybridJointHandles_[i].getPosition();
+    joint_msg.dq = hybridJointHandles_[i].getVelocity();
+    jointStatePublisher[i].publish(joint_msg);
+  }
+
   // State Estimate
   updateStateEstimation(time, period);
 

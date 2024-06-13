@@ -22,5 +22,16 @@
         </plugin>
     </gazebo>
 
+    <gazebo>
+        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
+            <frequency>10</frequency>
+            <plot>
+                <link>base</link>
+                <pose>0 0 0 0 0 0</pose>
+                <material>Gazebo/Yellow</material>
+            </plot>
+        </plugin>
+    </gazebo>
+
 
 </robot>

@@ -18,6 +18,9 @@ KD_CALF_GAIN = 10
 class Controller:
     def __init__(self):
         self.joint_command_publishers = {}
+        self.joints_ref = {"RL_hip":0.0, "RR_hip":-0.0, "FL_hip":0.0, "FR_hip":-0.0, 
+                          "RL_thigh":0.9, "RR_thigh":0.9, "FL_thigh":0.9, "FR_thigh":0.9, 
+                          "RL_calf":-1.8, "RR_calf":-1.8, "FL_calf":-1.8, "FR_calf":-1.8}
         
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
@@ -42,16 +45,17 @@ class Controller:
         # Set up a ROS rate to manage publishing speed
 
         while not rospy.is_shutdown():
-            for joint_name in ["RL_hip"]:
+            for joint_name, data in self.joints_ref.items():
                 # Control logic: apply a simple proportional controller                    
                 # Create and publish the command message
+                desired_position = self.joints_ref[joint_name]
                 command_msg = MotorCmd()
                 command_msg.mode = 0x0A  # Position control mode
-                command_msg.q = 0.7
+                command_msg.q = desired_position
                 command_msg.dq = 0 
                 command_msg.tau = 0 #control_effort
-                command_msg.Kp = 3 # Position gain
-                command_msg.Kd = 0    # Damping gain
+                command_msg.Kp = 40 # Position gain
+                command_msg.Kd = 5    # Damping gain
 
                 if joint_name in self.joint_command_publishers:
                     self.joint_command_publishers[joint_name].publish(command_msg)

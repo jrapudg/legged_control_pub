@@ -21,6 +21,7 @@
 #include "legged_controllers/visualization/LeggedSelfCollisionVisualization.h"
 
 #include "unitree_legged_msgs/MotorCmd.h"
+#include "unitree_legged_msgs/MotorState.h"
 
 namespace legged {
 using namespace ocs2;
@@ -74,6 +75,7 @@ class LeggedController : public controller_interface::MultiInterfaceController<H
 
  private:
   std::vector<ros::Subscriber> jointSubscribers;
+  std::vector<ros::Publisher> jointStatePublisher;
   std::thread mpcThread_;
   std::atomic_bool controllerRunning_{}, mpcRunning_{};
   benchmark::RepeatedTimer mpcTimer_;
