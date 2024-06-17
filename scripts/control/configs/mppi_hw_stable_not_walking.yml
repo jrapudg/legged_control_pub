@@ -1,0 +1,128 @@
+# MPPI parameters
+dt: 0.01 # time step
+n_samples: 30 # number of samples
+lambda: 0.15 # temperature
+horizon: 80 # horizon
+n_workers: 6 # number of workers
+seed: 42 # seed
+
+# model parameters for contact model
+o_solref:
+  - 0.02 # time constant for contact model
+  - 1.0  # damping ratio for contact model
+
+# spline parameters
+sample_type: "cubic" # spline order 
+n_knots: 4 # number of knots
+
+# noise to perturb the control inputs
+noise_sigma:
+  - 0.08 # FR_1
+  - 0.08 # FR_2
+  - 0.08 # FR_3
+  - 0.08 # FL_1
+  - 0.08 # FL_2
+  - 0.08 # FL_3
+  - 0.08 # RR_1
+  - 0.08 # RR_2
+  - 0.08 # RR_3
+  - 0.08 # RL_1
+  - 0.08 # RL_2
+  - 0.08 # RL_3
+
+
+# diagonal entries of the cost matrix Q
+Q_diag: 
+  - 10000 # x #4000
+  - 10000 # y #4000
+  - 100 # z
+  - 4000000 # rot_quat
+  - 0 # rot_quat
+  - 0 # rot_quat
+  - 0 # rot_quat
+  - 1000 # FR_1
+  - 1000 # FR_2
+  - 1000 # FR_3
+  - 1000 # FL_1
+  - 1000 # FL_2
+  - 1000 # FL_3
+  - 1000 # RR_1
+  - 1000 # RR_2
+  - 1000 # RR_3
+  - 1000 # RL_1
+  - 1000 # RL_2
+  - 1000 # RL_3
+  - 0.0001 # x_dot
+  - 0.0001 # y_dot
+  - 0.0001 # z_dot
+  - 0.0001 # rot_x_dot
+  - 0.0001 # rot_y_dot
+  - 0.0001 # rot_z_dot
+  - 0.1 # FR_1_dot
+  - 0.1 # FR_2_dot
+  - 0.1 # FR_3_dot
+  - 0.1 # FL_1_dot
+  - 0.1 # FL_2_dot
+  - 0.1 # FL_3_dot
+  - 0.1 # RR_1_dot
+  - 0.1 # RR_2_dot
+  - 0.1 # RR_3_dot
+  - 0.1 # RL_1_dot
+  - 0.1 # RL_2_dot
+  - 0.1 # RL_3_dot
+
+# diagonal entries of the cost matrix R
+R_diag:
+  - 0.1 # FR_1
+  - 0.1 # FR_2
+  - 0.1 # FR_3
+  - 0.1 # FL_1
+  - 0.1 # FL_2
+  - 0.1 # FL_3
+  - 0.1 # RR_1
+  - 0.1 # RR_2
+  - 0.1 # RR_3
+  - 0.1 # RL_1
+  - 0.1 # RL_2
+  - 0.1 # RL_3
+
+q_ref:
+  - 0.0 # x
+  - 0.0 # y
+  - 0.2 # z
+  - 1 # quat 0 0.7071
+  - 0.0 # quat 1
+  - 0.0 # quat 2
+  - 0.0 # quat 3 0.7071
+  - 0.0 # FR_1
+  - 0.9 # FR_2
+  - -2.0 # FR_3
+  - 0.0 # FL_1
+  - 0.9 # FL_2
+  - -2.0  # FL_3
+  - 0.0 # RR_1
+  - 0.9 # RR_2
+  - -2.0  # RR_3
+  - 0.0 # RL_1
+  - 0.9 # RL_2
+  - -2.0  # RL_3
+
+v_ref:
+  - 0.0 # x_dot
+  - 0.0 # y_dot
+  - 0.0 # z_dot
+  - 0.0 # rot_x_dot
+  - 0.0 # rot_y_dot
+  - 0.0 # rot_z_dot
+  - 0.0 # FR_1_dot
+  - 0.0 # FR_2_dot
+  - 0.0 # FR_3_dot
+  - 0.0 # FL_1_dot
+  - 0.0 # FL_2_dot
+  - 0.0 # FL_3_dot
+  - 0.0 # RR_1_dot
+  - 0.0 # RR_2_dot
+  - 0.0 # RR_3_dot
+  - 0.0 # RL_1_dot
+  - 0.0 # RL_2_dot
+  - 0.0 # RL_3_dot

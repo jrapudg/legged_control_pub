@@ -38,7 +38,7 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
 
   setupLeggedInterface(taskFile, urdfFile, referenceFile, verbose);
   setupMpc();
-  setupMrt();
+  // setupMrt();
   // Visualization
   ros::NodeHandle nh;
   CentroidalModelPinocchioMapping pinocchioMapping(leggedInterface_->getCentroidalModelInfo());
@@ -66,12 +66,12 @@ bool LeggedController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHand
   setupStateEstimate(taskFile, verbose);
 
   // Whole body control
-  wbc_ = std::make_shared<WeightedWbc>(leggedInterface_->getPinocchioInterface(), leggedInterface_->getCentroidalModelInfo(),
-                                       *eeKinematicsPtr_);
-  wbc_->loadTasksSetting(taskFile, verbose);
+  // wbc_ = std::make_shared<WeightedWbc>(leggedInterface_->getPinocchioInterface(), leggedInterface_->getCentroidalModelInfo(),
+  //                                      *eeKinematicsPtr_);
+  // wbc_->loadTasksSetting(taskFile, verbose);
 
   // Safety Checker
-  safetyChecker_ = std::make_shared<SafetyChecker>(leggedInterface_->getCentroidalModelInfo());
+  // safetyChecker_ = std::make_shared<SafetyChecker>(leggedInterface_->getCentroidalModelInfo());
 
   jointSubscribers.resize(12);
   jointStatePublisher.resize(12);
@@ -113,17 +113,17 @@ void LeggedController::starting(const ros::Time& time) {
   currentObservation_.input.setZero(leggedInterface_->getCentroidalModelInfo().inputDim);
   currentObservation_.mode = ModeNumber::STANCE;
 
-  TargetTrajectories target_trajectories({currentObservation_.time}, {currentObservation_.state}, {currentObservation_.input});
+  // TargetTrajectories target_trajectories({currentObservation_.time}, {currentObservation_.state}, {currentObservation_.input});
 
   // Set the first observation and command and wait for optimization to finish
-  mpcMrtInterface_->setCurrentObservation(currentObservation_);
-  mpcMrtInterface_->getReferenceManager().setTargetTrajectories(target_trajectories);
-  ROS_INFO_STREAM("Waiting for the initial policy ...");
-  while (!mpcMrtInterface_->initialPolicyReceived() && ros::ok()) {
-    mpcMrtInterface_->advanceMpc();
-    ros::WallRate(leggedInterface_->mpcSettings().mrtDesiredFrequency_).sleep();
-  }
-  ROS_INFO_STREAM("Initial policy has been received.");
+  // mpcMrtInterface_->setCurrentObservation(currentObservation_);
+  // mpcMrtInterface_->getReferenceManager().setTargetTrajectories(target_trajectories);
+  // ROS_INFO_STREAM("Waiting for the initial policy ...");
+  // while (!mpcMrtInterface_->initialPolicyReceived() && ros::ok()) {
+  //   mpcMrtInterface_->advanceMpc();
+  //   ros::WallRate(leggedInterface_->mpcSettings().mrtDesiredFrequency_).sleep();
+  // }
+  // ROS_INFO_STREAM("Initial policy has been received.");
 
   mpcRunning_ = true;
 }
@@ -141,33 +141,33 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   updateStateEstimation(time, period);
 
   // Update the current state of the system
-  mpcMrtInterface_->setCurrentObservation(currentObservation_);
+  // mpcMrtInterface_->setCurrentObservation(currentObservation_);
 
   // Load the latest MPC policy
-  mpcMrtInterface_->updatePolicy();
+  // mpcMrtInterface_->updatePolicy();
 
   // Evaluate the current policy
-  vector_t optimizedState, optimizedInput;
-  size_t plannedMode = 0;  // The mode that is active at the time the policy is evaluated at.
-  mpcMrtInterface_->evaluatePolicy(currentObservation_.time, currentObservation_.state, optimizedState, optimizedInput, plannedMode);
+  // vector_t optimizedState, optimizedInput;
+  // size_t plannedMode = 0;  // The mode that is active at the time the policy is evaluated at.
+  // mpcMrtInterface_->evaluatePolicy(currentObservation_.time, currentObservation_.state, optimizedState, optimizedInput, plannedMode);
 
   // Whole body control
-  currentObservation_.input = optimizedInput;
+  // currentObservation_.input = optimizedInput;
 
-  wbcTimer_.startTimer();
-  vector_t x = wbc_->update(optimizedState, optimizedInput, measuredRbdState_, plannedMode, period.toSec());
-  wbcTimer_.endTimer();
+  // wbcTimer_.startTimer();
+  // vector_t x = wbc_->update(optimizedState, optimizedInput, measuredRbdState_, plannedMode, period.toSec());
+  // wbcTimer_.endTimer();
 
-  vector_t torque = x.tail(12);
+  // vector_t torque = x.tail(12);
 
-  vector_t posDes = centroidal_model::getJointAngles(optimizedState, leggedInterface_->getCentroidalModelInfo());
-  vector_t velDes = centroidal_model::getJointVelocities(optimizedInput, leggedInterface_->getCentroidalModelInfo());
+  // vector_t posDes = centroidal_model::getJointAngles(optimizedState, leggedInterface_->getCentroidalModelInfo());
+  // vector_t velDes = centroidal_model::getJointVelocities(optimizedInput, leggedInterface_->getCentroidalModelInfo());
 
   // Safety check, if failed, stop the controller
-  if (!safetyChecker_->check(currentObservation_, optimizedState, optimizedInput)) {
-    ROS_ERROR_STREAM("[Legged Controller] Safety check failed, stopping the controller.");
-    stopRequest(time);
-  }
+  // if (!safetyChecker_->check(currentObservation_, optimizedState, optimizedInput)) {
+  //   ROS_ERROR_STREAM("[Legged Controller] Safety check failed, stopping the controller.");
+  //   stopRequest(time);
+  // }
 
   // vector_t posDos(12);
   // vector_t velDesFake(12);
@@ -182,8 +182,8 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
   // }
 
   // Visualization
-  robotVisualizer_->update(currentObservation_, mpcMrtInterface_->getPolicy(), mpcMrtInterface_->getCommand());
-  selfCollisionVisualization_->update(currentObservation_);
+  // robotVisualizer_->update(currentObservation_, mpcMrtInterface_->getPolicy(), mpcMrtInterface_->getCommand());
+  // selfCollisionVisualization_->update(currentObservation_);
 
   // Publish the observation. Only needed for the command interface
   observationPublisher_.publish(ros_msg_conversions::createObservationMsg(currentObservation_));

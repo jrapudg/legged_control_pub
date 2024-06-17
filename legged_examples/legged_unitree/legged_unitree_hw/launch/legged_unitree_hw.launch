@@ -13,4 +13,12 @@
     <node name="legged_unitree_hw" pkg="legged_unitree_hw" type="legged_unitree_hw" respawn="false"
           clear_params="true" output="screen" />
 
+    <!-- Node to run our Python script -->
+    <node pkg="gait_scheduler" type="scheduler.py" name="schedule" output="screen" />
+    
+
+    <!-- Node to run our Python script -->
+    <node pkg="gait_scheduler" type="goal_pub.py" name="goal" output="screen" />
+    
+
 </launch>

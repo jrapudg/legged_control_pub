@@ -1,0 +1,95 @@
+# LQR parameters for a quadruped robot
+dt: 0.002
+
+# diagonal entries of the cost matrix Q
+Q_diag: 
+  - 10 # x
+  - 10 # y
+  - 10 # z
+  - 10 # rot_x
+  - 10 # rot_y
+  - 10 # rot_z
+  - 100 # FR_1
+  - 100 # FR_2
+  - 100 # FR_3
+  - 100 # FL_1
+  - 100 # FL_2
+  - 100 # FL_3
+  - 100 # RR_1
+  - 100 # RR_2
+  - 100 # RR_3
+  - 100 # RL_1
+  - 100 # RL_2
+  - 100 # RL_3
+  - 0.1 # x_dot
+  - 0.1 # y_dot
+  - 0.1 # z_dot
+  - 0.1 # rot_x_dot
+  - 0.1 # rot_y_dot
+  - 0.1 # rot_z_dot
+  - 0.1 # FR_1_dot
+  - 0.1 # FR_2_dot
+  - 0.1 # FR_3_dot
+  - 0.1 # FL_1_dot
+  - 0.1 # FL_2_dot
+  - 0.1 # FL_3_dot
+  - 0.1 # RR_1_dot
+  - 0.1 # RR_2_dot
+  - 0.1 # RR_3_dot
+  - 0.1 # RL_1_dot
+  - 0.1 # RL_2_dot
+  - 0.1 # RL_3_dot
+
+# diagonal entries of the cost matrix R
+R_diag:
+  - 0.1 # FR_1
+  - 0.1 # FR_2
+  - 0.1 # FR_3
+  - 0.1 # FL_1
+  - 0.1 # FL_2
+  - 0.1 # FL_3
+  - 0.1 # RR_1
+  - 0.1 # RR_2
+  - 0.1 # RR_3
+  - 0.1 # RL_1
+  - 0.1 # RL_2
+  - 0.1 # RL_3
+
+# diagonal entries of the final cost matrix Qf
+Qf_diag: 
+  - 1 # x
+  - 1 # y
+  - 1 # z
+  - 1 # rot_x
+  - 1 # rot_y
+  - 1 # rot_z
+  - 1 # FR_1
+  - 1 # FR_2
+  - 1 # FR_3
+  - 1 # FL_1
+  - 1 # FL_2
+  - 1 # FL_3
+  - 1 # RR_1
+  - 1 # RR_2
+  - 1 # RR_3
+  - 1 # RL_1
+  - 1 # RL_2
+  - 1 # RL_3
+  - 1 # x_dot
+  - 1 # y_dot
+  - 1 # z_dot
+  - 1 # rot_x_dot
+  - 1 # rot_y_dot
+  - 1 # rot_z_dot
+  - 1 # FR_1_dot
+  - 1 # FR_2_dot
+  - 1 # FR_3_dot
+  - 1 # FL_1_dot
+  - 1 # FL_2_dot
+  - 1 # FL_3_dot
+  - 1 # RR_1_dot
+  - 1 # RR_2_dot
+  - 1 # RR_3_dot
+  - 1 # RL_1_dot
+  - 1 # RL_2_dot
+  - 1 # RL_3_dot
