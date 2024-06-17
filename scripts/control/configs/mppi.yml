@@ -1,7 +1,7 @@
 # MPPI parameters
 dt: 0.01 # time step
 n_samples: 30 # number of samples
-lambda: 0.2 # temperature
+lambda: 0.20 # temperature
 horizon: 80 # horizon
 n_workers: 6 # number of workers
 seed: 42 # seed
@@ -33,8 +33,8 @@ noise_sigma:
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 4000 # x #4000
-  - 4000 # y #4000
+  - 3000 # x #4000
+  - 3000 # y #4000
   - 100 # z
   - 6000000 # rot_quat
   - 0 # rot_quat

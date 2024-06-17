@@ -194,7 +194,7 @@ class MPPI:
         return 1 - np.abs(dot_products)
 
     def quadruped_cost_np(self, x, u, x_ref):
-        kp = 40
+        kp = 60
         kd = 3
         
         # Compute the error terms
@@ -206,12 +206,18 @@ class MPPI:
         x_error[:, 5] = q_dist
         x_error[:, 6] = q_dist
 
-        x_joint = x[:, 7:19] #[:, [3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8]]
+        x_joint = x[:, 7:19][:, [3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8]]
         u_error = kp * (u - x_joint) #- kd * x[:, 25:]
 
         # Compute cost using einsum for precise matrix operations
         # Apply the matrix Q to x_error and R to u_error, sum over appropriate dimensions
-        cost = np.einsum('ij,ik,jk->i', x_error, x_error, self.Q) + np.einsum('ij,ik,jk->i', u_error, u_error, self.R)
+        x_error[:, :3] = 0
+        x_pos_error = x[:,:3] - x_ref[:,:3]
+        L1_norm_pos_cost = np.abs(np.dot(x_pos_error, self.Q[:3,:3])).sum(axis=1)
+
+        cost = np.einsum('ij,ik,jk->i', x_error, x_error, self.Q) + np.einsum('ij,ik,jk->i', u_error, u_error, self.R) + L1_norm_pos_cost
+
+        #print(cost.shape)
         return cost
 
     def calculate_total_cost(self, states, actions, joints_ref, body_ref):
