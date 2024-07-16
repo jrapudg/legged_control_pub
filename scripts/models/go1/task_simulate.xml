@@ -22,11 +22,11 @@
     <!-- <body name="goal" mocap="true" pos=".3 0 0.26">
       <geom size="0.12" contype="0" conaffinity="0" rgba="0 1 0 .5" group="2"/>
     </body> -->
-    <!-- <body name="box" mocap="true" pos="-2.5 0 0">
-      <geom name="box" class="prop" size="1 1 0.3"/>
-    </body>
+  
+    <!-- 
     <geom name="ramp" class="prop" pos="3.13 2.5 -.18" size="1.6 1 .5" euler="0 -0.2 0"/>
     <geom name="hill" class="prop" pos="6 6 -5.5" size="6" type="sphere"/> -->
+    <!-- Add a box -->
   </worldbody>
 
   <default>

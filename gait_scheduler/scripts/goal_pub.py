@@ -59,51 +59,51 @@ class GoalPub:
         
         self.goal_pos = [#[0.5, 0, 0.2],
                          
-                         [1, 0, 0.2],
-                         [1, 0, 0.2],
-                         [1, 0, 0.2],
+                         [1, 0, 0.27],
+                         [1, 0, 0.27],
+                         [1, 0, 0.27],
 
-                         [1.5, 0.5, 0.2],
+                         [1.5, 0.5, 0.27],
 
-                         [2, 1, 0.2],
-                         [2, 1, 0.2],
-                         [2, 1, 0.2],
+                         [2, 1, 0.27],
+                         [2, 1, 0.27],
+                         [2, 1, 0.27],
                          
                          #[2, 1.5, 0.2],
 
-                         [2, 2, 0.2],
-                         [2, 2, 0.2],
-                         [2, 2, 0.2],
+                         [2, 2, 0.27],
+                         [2, 2, 0.27],
+                         [2, 2, 0.27],
 
-                         [1.5, 2.5, 0.2],
+                         [1.5, 2.5, 0.27],
 
-                         [1, 3, 0.2],
-                         [1, 3, 0.2],
-                         [1, 3, 0.2],
+                         [1, 3, 0.27],
+                         [1, 3, 0.27],
+                         [1, 3, 0.27],
 
                          #0.5, 3, 0.2],
 
-                         [0, 3, 0.2],
-                         [0, 3, 0.2], 
-                         [0, 3, 0.2], 
+                         [0, 3, 0.27],
+                         [0, 3, 0.27], 
+                         [0, 3, 0.27], 
 
-                         [-0.5, 2.5, 0.2],
+                         [-0.5, 2.5, 0.27],
 
-                         [-1, 2, 0.2], 
-                         [-1, 2, 0.2],
-                         [-1, 2, 0.2],
+                         [-1, 2, 0.27], 
+                         [-1, 2, 0.27],
+                         [-1, 2, 0.27],
 
                          #[-1, 1.5, 0.2],
 
-                         [-1, 1, 0.2],
-                         [-1, 1, 0.2],
-                         [-1, 1, 0.2],
+                         [-1, 1, 0.27],
+                         [-1, 1, 0.27],
+                         [-1, 1, 0.27],
 
-                         [-0.5, 0.5, 0.2],
+                         [-0.5, 0.5, 0.27],
 
-                         [0, 0, 0.2],
-                         [0, 0, 0.2],
-                         [0, 0, 0.2]]
+                         [0, 0, 0.27],
+                         [0, 0, 0.27],
+                         [0, 0, 0.27]]
         
         self.goal_ori = [#[1, 0, 0, 0], #0 degrees
                          
@@ -181,9 +181,9 @@ class GoalPub:
         #body_topic = "/quadruped/body_estimate"
         #rospy.Subscriber(body_topic, QuadrupedState, self.body_state_callback)
         
-        #body_topic = "/ground_truth/state"
+        body_topic = "/ground_truth/state"
         #body_topic = "/mocap_node/Go1_body/Odom"
-        body_topic = "/odom"
+        #body_topic = "/odom"
         rospy.Subscriber(body_topic, Odometry, self.odom_callback)
         
         while not rospy.is_shutdown():
@@ -193,7 +193,7 @@ class GoalPub:
             quat_dist = 1 - np.abs(np.dot(self.goal_ori[self.index], - np.array(self.body_ori)))
             rospy.loginfo(f"Distance to goal {dist_to_goal} ")
             rospy.loginfo(f"Quat to goal {quat_dist} ")
-            if dist_to_goal < 0.18 and quat_dist < 0.002:
+            if dist_to_goal < 0.3 and quat_dist < 0.005:
                 self.index = (self.index + 1)%len(self.goal_pos)
             goal_msg = GoalState()
             goal_msg.body_pos = self.goal_pos[self.index]

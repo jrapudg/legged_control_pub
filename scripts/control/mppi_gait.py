@@ -12,12 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait.tsv', phase_time = 0):
-    #def __init__(self, gait_path = '../../gaits/walking_gait_S30ms_O40ms_H10cm.tsv', phase_time = 0):
-    #def __init__(self, gait_path = '../gaits/walking_gait_S10ms_O15ms_H10cm.tsv', phase_time = 0):
-    #def __init__(self, gait_path = '../../gaits/walking_gait_S10ms_O15ms_H10cm.tsv', phase_time = 0):
-    #def __init__(self, gait_path = '../gaits/walking_gait_S10ms_O15ms_H10cm.tsv', phase_time = 0):
-    #def __init__(self, gait_path = '../gaits/walking_gait_S10ms_O15ms_H20cm.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGH.tsv', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
@@ -33,15 +28,17 @@ class GaitScheduler:
         self.indices = np.roll(self.indices, -1)
     
     def get_current_ref(self):
-        return self.gait[:, self.phase_time]
-    
+        return self.gait[:, self.phase_time] 
 
 class MPPI:
-    def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_jax_no_collision.xml"),
-                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi.yml")) -> None:
+    def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi.xml"),
+                 #config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two.yml")) -> None:
+                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two_gazebo.yml")) -> None:
         # load the configuration file
         with open(config_path, 'r') as file:
             params = yaml.safe_load(file)
+
+        self.internal_ref = False
 
         # Load model
         self.model = mujoco.MjModel.from_xml_path(model_path)
@@ -55,10 +52,10 @@ class MPPI:
         self.n_samples = params['n_samples']
         self.noise_sigma = np.array(params['noise_sigma'])
         self.num_workers = params['n_workers']
-        self.sampling_init = np.array([0.073,  1.34, -2.83,  
-                                       0.073,  1.34, -2.83,  
-                                       0.073,  1.34, -2.83,  
-                                       0.073,  1.34, -2.83])
+        self.sampling_init = np.array([-0.3,  1.34, -2.83,  
+                                       0.3,  1.34, -2.83,  
+                                       -0.3,  1.34, -2.83,  
+                                       0.3,  1.34, -2.83])
         
         # Cost
         self.Q = np.diag(np.array(params['Q_diag']))
@@ -98,8 +95,35 @@ class MPPI:
             
         self.trajectory = None
         self.reset_planner() 
-        #self.update(self.x_ref)
-        #self.reset_planner()     
+
+        self.goal_pos = [[1, 0, 0.27],
+                         [2, 1, 0.27],
+                         [2, 2, 0.27],
+                         [1, 3, 0.27],
+                         [0, 3, 0.27], 
+                         [-1, 2, 0.27], 
+                         [-1, 1, 0.27],
+                         [0, 0, 0.27]]
+        
+        self.goal_ori = [[1, 0, 0, 0], 
+                         #[0.92388, 0, 0.38268, 0], 
+                         [0.92388, 0, 0, 0.38268], 
+                         #[0.7071, 0, 0, -0.7071],
+                         [0.7071, 0, 0, 0.7071], 
+                         [0.38268, 0, 0, 0.92388],
+                         [0, 0, 0, 1],
+                         [-0.38268, 0, 0, 0.92388],
+                         [-0.7071, 0, 0, 0.7071],
+                         [-0.92388, 0, 0, 0.38268]]  
+
+        self.goal_index = 0
+        self.body_ref = np.concatenate((self.goal_pos[self.goal_index], 
+                                        self.goal_ori[self.goal_index], 
+                                        np.zeros(6)))
+
+    def next_goal(self):
+        self.goal_index = (self.goal_index + 1) % len(self.goal_pos)
+        self.body_ref = np.concatenate((self.goal_pos[self.goal_index], self.goal_ori[self.goal_index], np.zeros(6)))
                 
     def reset_planner(self):
         self.trajectory = np.zeros((self.horizon, self.act_dim))
@@ -136,14 +160,15 @@ class MPPI:
             actions = np.clip(actions, self.act_min, self.act_max)
             return actions
         
-    def update(self, obs, update_ref=True): 
+    def update(self, obs): 
         actions = self.perturb_action()
+        self.obs = obs
         self.rollout_func(self.state_rollouts, actions, np.repeat(np.array([np.concatenate([[0],obs])]), self.n_samples, axis=0), num_workers=self.num_workers, nstep=self.horizon)
         #states, actions, phase_time, joints_gait, body_ref
         
-        if update_ref:
-            print("Updating reference")
-            #self.joints_ref = self.gait_scheduler.gait[:, self.gait_scheduler.indices[:self.horizon]]
+        if self.internal_ref:
+            #print("Updating reference")
+            self.joints_ref = self.gait_scheduler.gait[:, self.gait_scheduler.indices[:self.horizon]]
             
         costs_sum = self.cost_func(self.state_rollouts[:,:,1:], actions, 
                                    self.joints_ref, self.body_ref)
@@ -194,7 +219,7 @@ class MPPI:
         return 1 - np.abs(dot_products)
 
     def quadruped_cost_np(self, x, u, x_ref):
-        kp = 60
+        kp = 50
         kd = 3
         
         # Compute the error terms
@@ -206,14 +231,16 @@ class MPPI:
         x_error[:, 5] = q_dist
         x_error[:, 6] = q_dist
 
-        x_joint = x[:, 7:19][:, [3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8]]
-        u_error = kp * (u - x_joint) #- kd * x[:, 25:]
+        x_joint = x[:, 7:19]
+        v_joint = x[:, 25:]
+        u_error = kp * (u - x_joint) - kd * v_joint
 
         # Compute cost using einsum for precise matrix operations
         # Apply the matrix Q to x_error and R to u_error, sum over appropriate dimensions
         x_error[:, :3] = 0
         x_pos_error = x[:,:3] - x_ref[:,:3]
         L1_norm_pos_cost = np.abs(np.dot(x_pos_error, self.Q[:3,:3])).sum(axis=1)
+        #L1_norm_pos_cost = 0
 
         cost = np.einsum('ij,ik,jk->i', x_error, x_error, self.Q) + np.einsum('ij,ik,jk->i', u_error, u_error, self.R) + L1_norm_pos_cost
 
@@ -224,6 +251,8 @@ class MPPI:
         num_samples = states.shape[0]
         num_pairs = states.shape[1]
 
+        traj_body_ref = np.repeat(body_ref[np.newaxis,:], num_samples*num_pairs, axis=0)
+
         # Flatten states and actions to two dimensions, treating all pairs per sample as a batch
         states = states.reshape(-1, states.shape[2])
         actions = actions.reshape(-1, actions.shape[2])
@@ -231,16 +260,31 @@ class MPPI:
         joints_ref = joints_ref.T
         joints_ref = np.tile(joints_ref, (num_samples, 1, 1))
         joints_ref = joints_ref.reshape(-1, joints_ref.shape[2])
-
-        body_ref = np.repeat(body_ref[np.newaxis,:], num_samples*num_pairs, axis=0)
+        
+        #interpolated_first_two_dims = np.linspace(self.obs[:2], body_ref[:2], num=num_pairs, axis=0)
+        #interpolated_first_two_dims = np.repeat(interpolated_first_two_dims[np.newaxis, :], num_samples, axis=1).squeeze()
+        #print(interpolated_first_two_dims.shape)
+        # Repeat the remaining dimensions
+        #repeated_remaining_dims = np.repeat(body_ref[2:][np.newaxis, :], num_pairs, axis=0)
+        #print(repeated_remaining_dims.shape)
+        # Combine the interpolated first two dimensions with the repeated remaining dimensions
+        #interpolated_body_ref = np.hstack((interpolated_first_two_dims, repeated_remaining_dims))
+        #print(interpolated_body_ref.shape)
+        #rep_body_ref = np.repeat(interpolated_body_ref, num_samples, axis=0)
+        #print(rep_body_ref.shape)
+        
+        #print("---------------")
+        #print(interpolated_body_ref)
+        #print("===============")
         # Transpose the repeated array
-        x_ref = np.concatenate([body_ref[:,:7], joints_ref[:,:12], body_ref[:,7:], joints_ref[:,12:]], axis=1)
-
+        #x_ref = np.concatenate([body_ref[:,:7], joints_ref[:,:12], body_ref[:,7:], joints_ref[:,12:]], axis=1)
+        x_ref = np.concatenate([traj_body_ref[:,:7], joints_ref[:,:12], 
+                                traj_body_ref[:,7:], joints_ref[:,12:]], 
+                                axis=1)
         # Compute batch costs
         costs = self.quadruped_cost_np(states, actions, x_ref)
         # Sum costs for each sample
         total_costs = costs.reshape(num_samples, num_pairs).sum(axis=1)
-
         return total_costs
     
     def __del__(self):

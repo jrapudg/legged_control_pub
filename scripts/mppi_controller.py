@@ -7,23 +7,22 @@ from unitree_legged_msgs.msg import MotorState, MotorCmd, GaitState, GoalState
 from nav_msgs.msg import Odometry
 
 # KP_HIP_GAIN = 50
-# KD_HIP_GAIN = 10
+# KD_HIP_GAIN = 5
 
 # KP_THIGH_GAIN = 50
-# KD_THIGH_GAIN = 10
+# KD_THIGH_GAIN = 5
 
 # KP_CALF_GAIN = 50
-# KD_CALF_GAIN = 10
+# KD_CALF_GAIN = 5
 
+KP_HIP_GAIN = 60
+KD_HIP_GAIN = 3
 
-KP_HIP_GAIN = 50
-KD_HIP_GAIN = 5
+KP_THIGH_GAIN = 60
+KD_THIGH_GAIN = 3
 
-KP_THIGH_GAIN = 50
-KD_THIGH_GAIN = 5
-
-KP_CALF_GAIN = 50
-KD_CALF_GAIN = 5
+KP_CALF_GAIN = 60
+KD_CALF_GAIN = 3
 
 
 class Controller:
@@ -103,11 +102,11 @@ class Controller:
                   "RL_thigh", "RR_thigh", "FL_thigh", "FR_thigh", 
                   "RL_calf", "RR_calf", "FL_calf", "FR_calf"]
         
-        #body_topic = "/quadruped/body_estimate"
-        #vel_topic = "/odom"
-        # pos_topic = "/ground_truth/state"
-        pos_topic = "/odom"
+        # odom_topic = "/ground_truth/state"
+        # pos_topic = "/odom"
         # pos_topic = "/mocap_node/Go1_body/Odom/"
+        pos_topic = "/ground_truth/state"
+        vel_topic = "/odom"
         gait_topic = "/quadruped/gait"
         goal_topic = '/quadruped/goal'
 
@@ -123,7 +122,9 @@ class Controller:
             pub = rospy.Publisher(command_topic, MotorCmd, queue_size=1)
             self.joint_command_publishers[joint] = pub
         
-        rospy.Subscriber(pos_topic, Odometry, self.odom_callback)
+        rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
+        rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+        #rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
         #rospy.Subscriber(body_topic, QuadrupedState, self.body_state_callback)
         #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
         #rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
@@ -131,7 +132,7 @@ class Controller:
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
         rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
         
-        rospy.sleep(2)
+        rospy.sleep(1)
         print("Pos: {}".format(self.body_pos))
         print("Ori: {}".format(self.body_ori))
         print("Lin: {}".format(self.body_vel))
@@ -141,22 +142,34 @@ class Controller:
         mppi = MPPI()
         while not rospy.is_shutdown():
             print()
+            # state = np.concatenate([self.body_pos, self.body_ori, 
+            #                         [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],
+            #                         [self.joint_states["FR_hip"].q, self.joint_states["FR_thigh"].q, self.joint_states["FR_calf"].q],
+            #                         [self.joint_states["RL_hip"].q, self.joint_states["RL_thigh"].q, self.joint_states["RL_calf"].q],
+            #                         [self.joint_states["RR_hip"].q, self.joint_states["RR_thigh"].q, self.joint_states["RR_calf"].q],
+            #                         self.body_vel, self.body_ang_vel,
+            #                         [self.joint_states["FL_hip"].dq, self.joint_states["FL_thigh"].dq, self.joint_states["FL_calf"].dq],
+            #                         [self.joint_states["FR_hip"].dq, self.joint_states["FR_thigh"].dq, self.joint_states["FR_calf"].dq],
+            #                         [self.joint_states["RL_hip"].dq, self.joint_states["RL_thigh"].dq, self.joint_states["RL_calf"].dq],
+            #                         [self.joint_states["RR_hip"].dq, self.joint_states["RR_thigh"].dq, self.joint_states["RR_calf"].dq]
+            #                         ])
+
             state = np.concatenate([self.body_pos, self.body_ori, 
-                                    [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],
                                     [self.joint_states["FR_hip"].q, self.joint_states["FR_thigh"].q, self.joint_states["FR_calf"].q],
-                                    [self.joint_states["RL_hip"].q, self.joint_states["RL_thigh"].q, self.joint_states["RL_calf"].q],
+                                    [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],
                                     [self.joint_states["RR_hip"].q, self.joint_states["RR_thigh"].q, self.joint_states["RR_calf"].q],
+                                    [self.joint_states["RL_hip"].q, self.joint_states["RL_thigh"].q, self.joint_states["RL_calf"].q],
                                     self.body_vel, self.body_ang_vel,
-                                    [self.joint_states["FL_hip"].dq, self.joint_states["FL_thigh"].dq, self.joint_states["FL_calf"].dq],
                                     [self.joint_states["FR_hip"].dq, self.joint_states["FR_thigh"].dq, self.joint_states["FR_calf"].dq],
-                                    [self.joint_states["RL_hip"].dq, self.joint_states["RL_thigh"].dq, self.joint_states["RL_calf"].dq],
-                                    [self.joint_states["RR_hip"].dq, self.joint_states["RR_thigh"].dq, self.joint_states["RR_calf"].dq]
+                                    [self.joint_states["FL_hip"].dq, self.joint_states["FL_thigh"].dq, self.joint_states["FL_calf"].dq],
+                                    [self.joint_states["RR_hip"].dq, self.joint_states["RR_thigh"].dq, self.joint_states["RR_calf"].dq],
+                                    [self.joint_states["RL_hip"].dq, self.joint_states["RL_thigh"].dq, self.joint_states["RL_calf"].dq]
                                     ])
             
             mppi.joints_ref = self.joits_ref[:, :mppi.horizon]
             mppi.body_ref = np.concatenate((self.body_pos_goal, self.body_ori_goal, np.zeros(6)))
             #print( mppi.body_ref)
-            control_effort = mppi.update(state, update_ref=False)
+            control_effort = mppi.update(state)
             #control_effort = mppi.update(state, update_ref=True)
 
             self.controls["FR_hip"] = control_effort[0]
@@ -192,7 +205,7 @@ class Controller:
                     rospy.loginfo(f"Control command for {joint_name}: Position = {self.controls[joint_name]}")
 
 
-            rate.sleep()  # Sleep to maintain the loop rate at 100 Hz
+            rate.sleep()  # Sleep to maintain the loop rate at 50 Hz
 
 if __name__ == '__main__':
     controller = Controller()

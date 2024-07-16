@@ -12,7 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = '/home/juan/Documents/rexlab/mppi_project/MuJoCo-control-estimation/gaits/walking_gait.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait.tsv', phase_time = 0):
     #def __init__(self, gait_path = '../../gaits/walking_gait_S30ms_O40ms_H10cm.tsv', phase_time = 0):
     #def __init__(self, gait_path = '../gaits/walking_gait_S10ms_O15ms_H10cm.tsv', phase_time = 0):
     #def __init__(self, gait_path = '../../gaits/walking_gait_S10ms_O15ms_H10cm.tsv', phase_time = 0):
@@ -49,14 +49,6 @@ class MPPI:
         self.model.opt.enableflags = 1 # to override contact settings
         self.model.opt.o_solref = np.array(params['o_solref'])
         
-        #print("Solver", self.model.opt.solver)
-        #print("Iterations", self.model.opt.iterations)
-        #print("LS Iterations", self.model.opt.ls_iterations)
-        #self.model.opt.solver = mujoco.mjtSolver.mjSOL_CG
-        #self.model.opt.iterations = 60
-        #self.model.opt.ls_iterations = 40
-
-        #print("Solver", self.model.opt.solver)
         # MPPI controller configuration
         self.temperature = params['lambda']
         self.horizon = params['horizon']

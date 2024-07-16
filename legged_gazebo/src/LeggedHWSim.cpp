@@ -46,6 +46,7 @@ bool LeggedHWSim::initSim(const std::string& robot_namespace, ros::NodeHandle mo
   registerInterface(&hybridJointInterface_);
   std::vector<std::string> names = ej_interface_.getNames();
   for (const auto& name : names) {
+    std::cout << name << std::endl;
     hybridJointDatas_.push_back(HybridJointData{.joint_ = ej_interface_.getHandle(name)});
     HybridJointData& back = hybridJointDatas_.back();
     hybridJointInterface_.registerHandle(HybridJointHandle(back.joint_, &back.posDes_, &back.velDes_, &back.kp_, &back.kd_, &back.ff_));
