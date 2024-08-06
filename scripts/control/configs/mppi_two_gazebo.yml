@@ -32,58 +32,58 @@ noise_sigma:
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 1200 # x #4000
-  - 1200 # y #4000
-  - 1000 # z
-  - 500000 # Quat distance
+  - 1000 # x #4000
+  - 1000 # y #4000
+  - 200 # z
+  - 800000 # Quat distance
   - 0 # rot_quat
   - 0 # rot_quat
   - 0 # rot_quat
-  - 800 # FR_1
-  - 800 # FR_2
-  - 800 # FR_3
-  - 800 # FL_1
-  - 800 # FL_2
-  - 800 # FL_3
-  - 800 # RR_1
-  - 800 # RR_2
-  - 800 # RR_3
-  - 800 # RL_1
-  - 800 # RL_2
-  - 800 # RL_3
-  - 0.01 # x_dot
-  - 0.01 # y_dot
-  - 0.01 # z_dot
-  - 0.01 # rot_x_dot
-  - 0.01 # rot_y_dot
-  - 0.01 # rot_z_dot
-  - 0.1 # FR_1_dot
-  - 0.1 # FR_2_dot
-  - 0.1 # FR_3_dot
-  - 0.1 # FL_1_dot
-  - 0.1 # FL_2_dot
-  - 0.1 # FL_3_dot
-  - 0.1 # RR_1_dot
-  - 0.1 # RR_2_dot
-  - 0.1 # RR_3_dot
-  - 0.1 # RL_1_dot
-  - 0.1 # RL_2_dot
-  - 0.1 # RL_3_dot
+  - 1000 # FR_1
+  - 1000 # FR_2
+  - 1000 # FR_3
+  - 1000 # FL_1
+  - 1000 # FL_2
+  - 1000 # FL_3
+  - 1000 # RR_1
+  - 1000 # RR_2
+  - 1000 # RR_3
+  - 1000 # RL_1
+  - 1000 # RL_2
+  - 1000 # RL_3
+  - 0.001 # x_dot
+  - 0.001 # y_dot
+  - 0.001 # z_dot
+  - 0.001 # rot_x_dot
+  - 0.001 # rot_y_dot
+  - 0.001 # rot_z_dot
+  - 0.01 # FR_1_dot
+  - 0.01 # FR_2_dot
+  - 0.01 # FR_3_dot
+  - 0.01 # FL_1_dot
+  - 0.01 # FL_2_dot
+  - 0.01 # FL_3_dot
+  - 0.01 # RR_1_dot
+  - 0.01 # RR_2_dot
+  - 0.01 # RR_3_dot
+  - 0.01 # RL_1_dot
+  - 0.01 # RL_2_dot
+  - 0.01 # RL_3_dot
 
 # diagonal entries of the cost matrix R
 R_diag:
-  - 0.1 # FR_1
-  - 0.1 # FR_2
-  - 0.1 # FR_3
-  - 0.1 # FL_1
-  - 0.1 # FL_2
-  - 0.1 # FL_3
-  - 0.1 # RR_1
-  - 0.1 # RR_2
-  - 0.1 # RR_3
-  - 0.1 # RL_1
-  - 0.1 # RL_2
-  - 0.1 # RL_3
+  - 0.01 # FR_1
+  - 0.01 # FR_2
+  - 0.01 # FR_3
+  - 0.01 # FL_1
+  - 0.01 # FL_2
+  - 0.01 # FL_3
+  - 0.01 # RR_1
+  - 0.01 # RR_2
+  - 0.01 # RR_3
+  - 0.01 # RL_1
+  - 0.01 # RL_2
+  - 0.01 # RL_3
 
 q_ref:
   - 0.0 # x
