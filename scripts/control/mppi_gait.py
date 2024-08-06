@@ -31,7 +31,7 @@ class GaitScheduler:
         return self.gait[:, self.phase_time] 
 
 class MPPI:
-    def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi.xml"),
+    def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi_cf.xml"),
                  #config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two.yml")) -> None:
                  config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two_gazebo.yml")) -> None:
         # load the configuration file

@@ -8,8 +8,8 @@ import os
 def main():
     T = 10000
     # model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_jax_no_collision.xml")
-    model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi.xml")
-    ctrl_model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi.xml")
+    model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi_stairs.xml")
+    ctrl_model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi_cf.xml")
     # agent = MPPI(model_path=model_path)
     #agent = MPPI()
     #print(agent.body_ref)
