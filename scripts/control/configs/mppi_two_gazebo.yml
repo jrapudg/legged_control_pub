@@ -1,9 +1,9 @@
 # MPPI parameters
 dt: 0.01 # time step
-n_samples: 30 # number of samples
-lambda: 0.07 # temperature
-horizon: 50 # horizon
-n_workers: 6 # number of workers
+n_samples: 20 # number of samples
+lambda: 0.18 # temperature
+horizon: 30 # horizon
+n_workers: 5 # number of workers
 seed: 42 # seed
 
 # model parameters for contact model
@@ -32,10 +32,10 @@ noise_sigma:
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 1000 # x #4000
-  - 1000 # y #4000
+  - 1800 # x #4000
+  - 1800 # y #4000
   - 200 # z
-  - 800000 # Quat distance
+  - 1000000 # Quat distance
   - 0 # rot_quat
   - 0 # rot_quat
   - 0 # rot_quat

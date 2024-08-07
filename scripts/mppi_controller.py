@@ -95,14 +95,14 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(50) 
+        rate = rospy.Rate(100) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
                   "RL_thigh", "RR_thigh", "FL_thigh", "FR_thigh", 
                   "RL_calf", "RR_calf", "FL_calf", "FR_calf"]
         
-        # odom_topic = "/ground_truth/state"
+        odom_topic = "/ground_truth/state"
         # pos_topic = "/odom"
         # pos_topic = "/mocap_node/Go1_body/Odom/"
         pos_topic = "/ground_truth/state"
@@ -122,12 +122,12 @@ class Controller:
             pub = rospy.Publisher(command_topic, MotorCmd, queue_size=1)
             self.joint_command_publishers[joint] = pub
         
-        rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
-        rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
-        #rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
-        #rospy.Subscriber(body_topic, QuadrupedState, self.body_state_callback)
-        #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
-        #rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+        # rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
+        # rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+
+
+        rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
+    
 
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
         rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
