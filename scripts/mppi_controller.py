@@ -3,6 +3,8 @@
 import rospy
 import numpy as np
 from control.mppi_gait import MPPI
+from scipy.spatial.transform import Rotation as R
+
 from unitree_legged_msgs.msg import MotorState, MotorCmd, GaitState, GoalState
 from nav_msgs.msg import Odometry
 
@@ -81,7 +83,9 @@ class Controller:
     def odom_vel_callback(self, data):
         # Store the latest state data
         # print("odom_callback")
-        self.body_vel = [data.twist.twist.linear.x, data.twist.twist.linear.y, data.twist.twist.linear.z]
+        rot = R.from_quat(self.body_ori[3,0,1,2])
+        local_array = np.array([data.twist.twist.linear.x, data.twist.twist.linear.y, data.twist.twist.linear.z])
+        self.body_vel = rot.apply(local_array)
         self.body_ang_vel = [data.twist.twist.angular.x, data.twist.twist.angular.y, data.twist.twist.angular.z]
 
     def gait_callback(self, data):
