@@ -78,6 +78,18 @@ class Controller:
         self.body_pos = [data.pose.pose.position.x, data.pose.pose.position.y, data.pose.pose.position.z]
         self.body_ori = [data.pose.pose.orientation.w, data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z]
     
+    def odom_lin_callback(self, data):
+        # Store the latest state data
+        # print("odom_callback")
+        self.body_vel = [data.twist.twist.linear.x, data.twist.twist.linear.y, data.twist.twist.linear.z]
+        # self.body_ang_vel = [data.twist.twist.angular.x, data.twist.twist.angular.y, data.twist.twist.angular.z]
+    
+    def odom_ang_callback(self, data):
+        # Store the latest state data
+        # print("odom_callback")
+        # self.body_vel = [data.twist.twist.linear.x, data.twist.twist.linear.y, data.twist.twist.linear.z]
+        self.body_ang_vel = [data.twist.twist.angular.x, data.twist.twist.angular.y, data.twist.twist.angular.z]
+
     def odom_vel_callback(self, data):
         # Store the latest state data
         # print("odom_callback")
@@ -102,7 +114,7 @@ class Controller:
                   "RL_thigh", "RR_thigh", "FL_thigh", "FR_thigh", 
                   "RL_calf", "RR_calf", "FL_calf", "FR_calf"]
         
-        odom_topic = "/ground_truth/state"
+        # odom_topic = "/ground_truth/state"
         # pos_topic = "/odom"
         # pos_topic = "/mocap_node/Go1_body/Odom/"
         pos_topic = "/ground_truth/state"
@@ -122,11 +134,13 @@ class Controller:
             pub = rospy.Publisher(command_topic, MotorCmd, queue_size=1)
             self.joint_command_publishers[joint] = pub
         
-        # rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
-        # rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+        rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
+        rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+        #rospy.Subscriber(pos_topic, Odometry, self.odom_lin_callback)
+        #rospy.Subscriber(vel_topic, Odometry, self.odom_ang_callback)
 
 
-        rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
+        #rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
     
 
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
