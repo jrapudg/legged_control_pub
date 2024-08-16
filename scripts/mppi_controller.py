@@ -17,14 +17,14 @@ from nav_msgs.msg import Odometry
 # KP_CALF_GAIN = 50
 # KD_CALF_GAIN = 5
 
-KP_HIP_GAIN = 50
-KD_HIP_GAIN = 3
+KP_HIP_GAIN = 70
+KD_HIP_GAIN = 5
 
-KP_THIGH_GAIN = 50
-KD_THIGH_GAIN = 3
+KP_THIGH_GAIN = 70
+KD_THIGH_GAIN = 5
 
-KP_CALF_GAIN = 50
-KD_CALF_GAIN = 3
+KP_CALF_GAIN = 70
+KD_CALF_GAIN = 5
 
 
 class Controller:
@@ -46,6 +46,8 @@ class Controller:
                          "RL_calf":KD_CALF_GAIN, "RR_calf":KD_CALF_GAIN, "FL_calf":KD_CALF_GAIN, "FR_calf":KD_CALF_GAIN}
         
         self.body_pos = [0, 0, 0]
+        self.body_xy = [0, 0]
+        self.body_z = [0]
         self.body_ori = [1, 0, 0, 0]
         self.body_vel = [0, 0, 0]
         self.body_ang_vel = [0, 0, 0]
@@ -78,8 +80,19 @@ class Controller:
         # Store the latest state data
         # print("odom_callback")
         self.body_pos = [data.pose.pose.position.x, data.pose.pose.position.y, data.pose.pose.position.z]
-        self.body_ori = [data.pose.pose.orientation.w, data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z]
+        #self.body_ori = [data.pose.pose.orientation.w, data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z]
     
+    def pos_xy_callback(self, data):
+        self.body_xy = [data.pose.pose.position.x, data.pose.pose.position.y]
+    
+    def pos_z_callback(self, data):
+        self.body_z = [data.pose.pose.position.z]
+
+    def odom_ori_callback(self, data):
+        # Store the latest state data
+        # print("odom_callback")
+        self.body_ori = [data.pose.pose.orientation.w, data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z]
+
     def odom_lin_callback(self, data):
         # Store the latest state data
         # print("odom_callback")
@@ -95,7 +108,7 @@ class Controller:
     def odom_vel_callback(self, data):
         # Store the latest state data
         # print("odom_callback")
-        rot = R.from_quat(self.body_ori[3,0,1,2])
+        rot = R.from_quat(np.array(self.body_ori)[[1,2,3,0]])
         local_array = np.array([data.twist.twist.linear.x, data.twist.twist.linear.y, data.twist.twist.linear.z])
         self.body_vel = rot.apply(local_array)
         self.body_ang_vel = [data.twist.twist.angular.x, data.twist.twist.angular.y, data.twist.twist.angular.z]
@@ -111,18 +124,17 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(100) 
+        rate = rospy.Rate(80) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
                   "RL_thigh", "RR_thigh", "FL_thigh", "FR_thigh", 
                   "RL_calf", "RR_calf", "FL_calf", "FR_calf"]
         
-        # odom_topic = "/ground_truth/state"
-        # pos_topic = "/odom"
-        # pos_topic = "/mocap_node/Go1_body/Odom/"
-        pos_topic = "/ground_truth/state"
-        vel_topic = "/odom"
+        mocap_topic = "/mocap_node/Go1_body/Odom"
+        odom_topic = "/odom"
+        gazebo_topic = "/ground_truth/state"
+
         gait_topic = "/quadruped/gait"
         goal_topic = '/quadruped/goal'
 
@@ -138,8 +150,20 @@ class Controller:
             pub = rospy.Publisher(command_topic, MotorCmd, queue_size=1)
             self.joint_command_publishers[joint] = pub
         
-        rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
-        rospy.Subscriber(vel_topic, Odometry, self.odom_vel_callback)
+        ## Gazebo Simulation
+        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        # rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+
+        ## Unitree HW
+        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
+        rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+
+        #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
+        #rospy.Subscriber(ori_topic, Odometry, self.odom_ori_callback)
         #rospy.Subscriber(pos_topic, Odometry, self.odom_lin_callback)
         #rospy.Subscriber(vel_topic, Odometry, self.odom_ang_callback)
 
@@ -150,7 +174,7 @@ class Controller:
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
         rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
         
-        rospy.sleep(1)
+        rospy.sleep(10)
         print("Pos: {}".format(self.body_pos))
         print("Ori: {}".format(self.body_ori))
         print("Lin: {}".format(self.body_vel))
@@ -160,6 +184,7 @@ class Controller:
         mppi = MPPI()
         while not rospy.is_shutdown():
             print()
+            self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
             # state = np.concatenate([self.body_pos, self.body_ori, 
             #                         [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],
             #                         [self.joint_states["FR_hip"].q, self.joint_states["FR_thigh"].q, self.joint_states["FR_calf"].q],
@@ -208,6 +233,7 @@ class Controller:
 
             
             for joint_name, data in self.joint_states.items():
+                #continue
                 # Control logic: apply a simple proportional controller                    
                 # Create and publish the command message
                 command_msg = MotorCmd()
@@ -222,7 +248,7 @@ class Controller:
                     self.joint_command_publishers[joint_name].publish(command_msg)
                     rospy.loginfo(f"Control command for {joint_name}: Position = {self.controls[joint_name]}")
 
-
+            rospy.loginfo(f"Position {self.body_pos}: Orientation = {self.body_ori}")
             rate.sleep()  # Sleep to maintain the loop rate at 50 Hz
 
 if __name__ == '__main__':
