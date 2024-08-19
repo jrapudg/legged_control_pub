@@ -197,15 +197,15 @@ class GoalPub:
         odom_topic = "/odom"
         gazebo_topic = "/ground_truth/state"
 
-        ## Gazebo Simulation
-        # rospy.Subscriber(gazebo_topic, Odometry, self.ori_callback)
-        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-
-        ## Unitree HW
-        rospy.Subscriber(mocap_topic, Odometry, self.ori_callback)
-        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # Gazebo Simulation
+        rospy.Subscriber(gazebo_topic, Odometry, self.ori_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
         rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+
+        # # Unitree HW
+        # rospy.Subscriber(mocap_topic, Odometry, self.ori_callback)
+        # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
    
         
         while not rospy.is_shutdown():
