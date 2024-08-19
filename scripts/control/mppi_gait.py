@@ -219,8 +219,8 @@ class MPPI:
         return 1 - np.abs(dot_products)
 
     def quadruped_cost_np(self, x, u, x_ref):
-        kp = 50
-        kd = 3
+        kp = 70
+        kd = 0
         
         # Compute the error terms
         x_error = x - x_ref
