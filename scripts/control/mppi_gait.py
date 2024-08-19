@@ -12,7 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGH.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGHER.tsv', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
