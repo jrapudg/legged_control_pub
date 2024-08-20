@@ -18,13 +18,13 @@ from nav_msgs.msg import Odometry
 # KD_CALF_GAIN = 5
 
 KP_HIP_GAIN = 70
-KD_HIP_GAIN = 4
+KD_HIP_GAIN = 6
 
 KP_THIGH_GAIN = 70
-KD_THIGH_GAIN = 4
+KD_THIGH_GAIN = 6
 
 KP_CALF_GAIN = 70
-KD_CALF_GAIN = 4
+KD_CALF_GAIN = 6
 
 
 class Controller:

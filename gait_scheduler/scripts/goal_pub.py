@@ -231,7 +231,7 @@ class GoalPub:
             quat_dist = 1 - np.abs(np.dot(self.goal_ori[self.index], - np.array(self.body_ori)))
             rospy.loginfo(f"Distance to goal {dist_to_goal} ")
             rospy.loginfo(f"Quat to goal {quat_dist} ")
-            if dist_to_goal < 0.1 and quat_dist < 0.005:
+            if dist_to_goal < 0.3 and quat_dist < 0.005:
                 self.index = (self.index + 1)%len(self.goal_pos)
             goal_msg = GoalState()
             goal_msg.body_pos = self.goal_pos[self.index]

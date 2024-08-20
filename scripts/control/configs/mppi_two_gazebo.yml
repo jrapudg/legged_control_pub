@@ -1,7 +1,7 @@
 # MPPI parameters
 dt: 0.01 # time step
 n_samples: 30 # number of samples
-lambda: 0.15 # 0.18 # temperature
+lambda: 0.12 # 0.18 # temperature
 horizon: 30 # horizon
 n_workers: 5 # number of workers
 seed: 42 # seed
@@ -19,38 +19,38 @@ n_knots: 4 # number of knots
 noise_sigma:
   - 0.08 # FR_1
   - 0.08 # FR_2
-  - 0.15 # FR_3
+  - 0.12 # FR_3
   - 0.08 # FL_1
   - 0.08 # FL_2
-  - 0.15 # FL_3
+  - 0.12 # FL_3
   - 0.08 # RR_1
   - 0.08 # RR_2
-  - 0.15 # RR_3
+  - 0.12 # RR_3
   - 0.08 # RL_1
   - 0.08 # RL_2
-  - 0.15 # RL_3
+  - 0.12 # RL_3
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 2000 # x #1500
-  - 2000 # y #4000
+  - 1000 # x #1500
+  - 1000 # y #4000
   - 200 # z
-  - 1500000 # Quat distance
+  - 1000000 # Quat distance
   - 0 # rot_quat
   - 0 # rot_quat
   - 0 # rot_quat
-  - 2500 # FR_1 1500
-  - 2500 # FR_2
-  - 2500 # FR_3
-  - 2500 # FL_1
-  - 2500 # FL_2
-  - 2500 # FL_3
-  - 2500 # RR_1
-  - 2500 # RR_2
-  - 2500 # RR_3
-  - 2500 # RL_1
-  - 2500 # RL_2
-  - 2500 # RL_3
+  - 800 # FR_1 1500
+  - 800 # FR_2
+  - 800 # FR_3
+  - 800 # FL_1
+  - 800 # FL_2
+  - 800 # FL_3
+  - 800 # RR_1
+  - 800 # RR_2
+  - 800 # RR_3
+  - 800 # RL_1
+  - 800 # RL_2
+  - 800 # RL_3
   - 0.001 # x_dot
   - 0.001 # y_dot
   - 0.01 # z_dot
