@@ -13,28 +13,13 @@ class GoalPub:
         # self.goal_ori = [[1, 0, 0, 0],
         #                  [1, 0, 0, 0]]
 
-        # # Gazebo Straight line task
-        # self.goal_pos = [[0, 0.0, 0.27],
-        #                  #[-0.8, 0.5, 0.27],
-        #                  [1.0, 0.0, 0.27],
-        #                  [2.0, 0.0, 0.27],
-        #                  [1.0, 0.0, 0.27],
-        #                  [0.0, 0.0, 0.27]]
-        
-        # self.goal_ori = [[1, 0, 0, 0],
-        #                  #[1, 0, 0, 0],
-        #                  [1, 0, 0, 0],
-        #                  [1, 0, 0, 0],
-        #                  [1, 0, 0, 0],
-        #                  [1, 0, 0, 0]]
-        
-        # HW Straight line task
-        self.goal_pos = [[-2.8, 0.5, 0.27],
-                         [-1.6, 0.5, 0.27],
+        # Gazebo Straight line task
+        self.goal_pos = [[0, 0.0, 0.27],
                          #[-0.8, 0.5, 0.27],
-                         [0.4, 0.5, 0.27],
-                         [-0.8, 0.5, 0.27],
-                         [-1.8, 0.5, 0.27]]
+                         [1.0, 0.0, 0.27],
+                         [2.0, 0.0, 0.27],
+                         [1.0, 0.0, 0.27],
+                         [0.0, 0.0, 0.27]]
         
         self.goal_ori = [[1, 0, 0, 0],
                          #[1, 0, 0, 0],
@@ -42,6 +27,19 @@ class GoalPub:
                          [1, 0, 0, 0],
                          [1, 0, 0, 0],
                          [1, 0, 0, 0]]
+        
+        # # HW Straight line task
+        # self.goal_pos = [[-1.8, 0.5, 0.27],
+        #                  [-0.7, 0.5, 0.27],
+        #                  #[-0.8, 0.5, 0.27],
+        #                  [0.4, 0.5, 0.27],
+        #                  [-0.7, 0.5, 0.27]]
+        
+        # self.goal_ori = [[1, 0, 0, 0],
+        #                  #[1, 0, 0, 0],
+        #                  [1, 0, 0, 0],
+        #                  [1, 0, 0, 0],
+        #                  [1, 0, 0, 0]]
 
         # # Straight line task
         # self.goal_pos = [[0.0, 0.0, 0.27],
@@ -212,15 +210,15 @@ class GoalPub:
         odom_topic = "/odom"
         gazebo_topic = "/ground_truth/state"
 
-        # # Gazebo Simulation
-        # rospy.Subscriber(gazebo_topic, Odometry, self.ori_callback)
-        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-
-        # Unitree HW
-        rospy.Subscriber(mocap_topic, Odometry, self.ori_callback)
-        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # Gazebo Simulation
+        rospy.Subscriber(gazebo_topic, Odometry, self.ori_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
         rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+
+        # # Unitree HW
+        # rospy.Subscriber(mocap_topic, Odometry, self.ori_callback)
+        # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
    
         
         while not rospy.is_shutdown():

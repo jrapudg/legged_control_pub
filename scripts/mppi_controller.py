@@ -18,13 +18,13 @@ from nav_msgs.msg import Odometry
 # KD_CALF_GAIN = 5
 
 KP_HIP_GAIN = 70
-KD_HIP_GAIN = 6
+KD_HIP_GAIN = 4
 
 KP_THIGH_GAIN = 70
-KD_THIGH_GAIN = 6
+KD_THIGH_GAIN = 4
 
 KP_CALF_GAIN = 70
-KD_CALF_GAIN = 6
+KD_CALF_GAIN = 4
 
 
 class Controller:
@@ -124,7 +124,7 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(80) 
+        rate = rospy.Rate(70) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
@@ -150,17 +150,17 @@ class Controller:
             pub = rospy.Publisher(command_topic, MotorCmd, queue_size=1)
             self.joint_command_publishers[joint] = pub
         
-        # # Gazebo Simulation
-        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-        # rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
-
-        # Unitree HW
-        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # Gazebo Simulation
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
         rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-        rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
         rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+
+        # # Unitree HW
+        # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        # rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
         #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
         #rospy.Subscriber(ori_topic, Odometry, self.odom_ori_callback)

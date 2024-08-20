@@ -12,7 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGH.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGHER.tsv', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
@@ -154,7 +154,9 @@ class MPPI:
             indices_float = np.linspace(0, self.horizon - 1, num=self.n_knots)
             indices = np.round(indices_float).astype(int)
             size = (self.n_samples, self.n_knots, self.act_dim)
-            knot_points = self.trajectory[indices] + self.generate_noise(size)
+            noise = self.generate_noise(size)
+            knot_points = self.trajectory[indices] + noise
+            knot_points[:, 0, :] = self.trajectory[0]
             cubic_spline = CubicSpline(indices, knot_points, axis=1)
             actions = cubic_spline(np.arange(self.horizon))
             actions = np.clip(actions, self.act_min, self.act_max)
