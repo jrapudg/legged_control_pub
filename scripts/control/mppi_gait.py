@@ -154,7 +154,9 @@ class MPPI:
             indices_float = np.linspace(0, self.horizon - 1, num=self.n_knots)
             indices = np.round(indices_float).astype(int)
             size = (self.n_samples, self.n_knots, self.act_dim)
-            knot_points = self.trajectory[indices] + self.generate_noise(size)
+            noise = self.generate_noise(size)
+            knot_points = self.trajectory[indices] + noise
+            knot_points[:, 0, :] = self.trajectory[0]
             cubic_spline = CubicSpline(indices, knot_points, axis=1)
             actions = cubic_spline(np.arange(self.horizon))
             actions = np.clip(actions, self.act_min, self.act_max)

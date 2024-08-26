@@ -18,13 +18,13 @@ from nav_msgs.msg import Odometry
 # KD_CALF_GAIN = 5
 
 KP_HIP_GAIN = 70
-KD_HIP_GAIN = 5
+KD_HIP_GAIN = 4
 
 KP_THIGH_GAIN = 70
-KD_THIGH_GAIN = 5
+KD_THIGH_GAIN = 4
 
 KP_CALF_GAIN = 70
-KD_CALF_GAIN = 5
+KD_CALF_GAIN = 4
 
 
 class Controller:
@@ -124,7 +124,7 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(80) 
+        rate = rospy.Rate(70) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
@@ -156,7 +156,7 @@ class Controller:
         rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
         rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
-        ## Unitree HW
+        # # Unitree HW
         # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
         # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
         # rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
@@ -174,7 +174,7 @@ class Controller:
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
         rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
         
-        rospy.sleep(1)
+        rospy.sleep(5)
         print("Pos: {}".format(self.body_pos))
         print("Ori: {}".format(self.body_ori))
         print("Lin: {}".format(self.body_vel))
