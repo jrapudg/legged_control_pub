@@ -12,7 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL_HIGHER.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL.tsv', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
@@ -33,7 +33,7 @@ class GaitScheduler:
 class MPPI:
     def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi_cf.xml"),
                  #config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two.yml")) -> None:
-                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two_gazebo.yml")) -> None:
+                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_gait_config.yml")) -> None:
         # load the configuration file
         with open(config_path, 'r') as file:
             params = yaml.safe_load(file)
