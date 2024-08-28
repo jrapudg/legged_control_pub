@@ -12,7 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait_NORMAL.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_raibert.tsv', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
@@ -106,8 +106,8 @@ class MPPI:
                          [0, 0, 0.27]]
         
         self.goal_ori = [[1, 0, 0, 0], 
-                         #[0.92388, 0, 0.38268, 0], 
-                         [0.92388, 0, 0, 0.38268], 
+                         [0.92388, 0, 0.38268, 0], 
+                         #[0.92388, 0, 0, 0.38268], 
                          #[0.7071, 0, 0, -0.7071],
                          [0.7071, 0, 0, 0.7071], 
                          [0.38268, 0, 0, 0.92388],
@@ -156,7 +156,7 @@ class MPPI:
             size = (self.n_samples, self.n_knots, self.act_dim)
             noise = self.generate_noise(size)
             knot_points = self.trajectory[indices] + noise
-            knot_points[:, 0, :] = self.trajectory[0]
+            #knot_points[:, 0, :] = self.trajectory[0]
             cubic_spline = CubicSpline(indices, knot_points, axis=1)
             actions = cubic_spline(np.arange(self.horizon))
             actions = np.clip(actions, self.act_min, self.act_max)
@@ -263,23 +263,6 @@ class MPPI:
         joints_ref = np.tile(joints_ref, (num_samples, 1, 1))
         joints_ref = joints_ref.reshape(-1, joints_ref.shape[2])
         
-        #interpolated_first_two_dims = np.linspace(self.obs[:2], body_ref[:2], num=num_pairs, axis=0)
-        #interpolated_first_two_dims = np.repeat(interpolated_first_two_dims[np.newaxis, :], num_samples, axis=1).squeeze()
-        #print(interpolated_first_two_dims.shape)
-        # Repeat the remaining dimensions
-        #repeated_remaining_dims = np.repeat(body_ref[2:][np.newaxis, :], num_pairs, axis=0)
-        #print(repeated_remaining_dims.shape)
-        # Combine the interpolated first two dimensions with the repeated remaining dimensions
-        #interpolated_body_ref = np.hstack((interpolated_first_two_dims, repeated_remaining_dims))
-        #print(interpolated_body_ref.shape)
-        #rep_body_ref = np.repeat(interpolated_body_ref, num_samples, axis=0)
-        #print(rep_body_ref.shape)
-        
-        #print("---------------")
-        #print(interpolated_body_ref)
-        #print("===============")
-        # Transpose the repeated array
-        #x_ref = np.concatenate([body_ref[:,:7], joints_ref[:,:12], body_ref[:,7:], joints_ref[:,12:]], axis=1)
         x_ref = np.concatenate([traj_body_ref[:,:7], joints_ref[:,:12], 
                                 traj_body_ref[:,7:], joints_ref[:,12:]], 
                                 axis=1)

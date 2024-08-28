@@ -1,7 +1,7 @@
 # MPPI parameters
 dt: 0.01 # time step
 n_samples: 30 # number of samples
-lambda: 0.15 # 0.18 # temperature
+lambda: 0.1 # 0.18 # temperature
 horizon: 30 # horizon
 n_workers: 5 # number of workers
 seed: 42 # seed
@@ -17,47 +17,47 @@ n_knots: 4 # number of knots
 
 # noise to perturb the control inputs
 noise_sigma:
-  - 0.06 # FR_1
-  - 0.06 # FR_2
-  - 0.08 # FR_3
-  - 0.06 # FL_1
-  - 0.06 # FL_2
-  - 0.08 # FL_3
-  - 0.06 # RR_1
-  - 0.06 # RR_2
-  - 0.08 # RR_3
-  - 0.06 # RL_1
-  - 0.06 # RL_2
-  - 0.08 # RL_3
+  - 0.1 # FR_1
+  - 0.1 # FR_2
+  - 0.1 # FR_3
+  - 0.1 # FL_1
+  - 0.1 # FL_2
+  - 0.1 # FL_3
+  - 0.1 # RR_1
+  - 0.1 # RR_2
+  - 0.1 # RR_3
+  - 0.1 # RL_1
+  - 0.1 # RL_2
+  - 0.1 # RL_3
 
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 4000 # x #4000
-  - 4000 # y #4000
-  - 500 # z
-  - 3000000 # rot_quat
+  - 1000 # x #4000
+  - 1000 # y #4000
+  - 200 # z
+  - 600000 # rot_quat, 600000
   - 0 # rot_quat
   - 0 # rot_quat
   - 0 # rot_quat
-  - 1200 # FR_1
-  - 1200 # FR_2
-  - 1200 # FR_3
-  - 1200 # FL_1
-  - 1200 # FL_2
-  - 1200 # FL_3
-  - 1200 # RR_1
-  - 1200 # RR_2
-  - 1200 # RR_3
-  - 1200 # RL_1
-  - 1200 # RL_2
-  - 1200 # RL_3
-  - 0.01 # x_dot
-  - 0.01 # y_dot
-  - 0.1 # z_dot
-  - 0.1 # rot_x_dot
-  - 1 # rot_y_dot
-  - 1 # rot_z_dot
+  - 800 # FR_1
+  - 800 # FR_2
+  - 800 # FR_3
+  - 800 # FL_1
+  - 800 # FL_2
+  - 800 # FL_3
+  - 800 # RR_1z
+  - 800 # RR_2
+  - 800 # RR_3z
+  - 800 # RL_1
+  - 800 # RL_2
+  - 800 # RL_3
+  - 0.0001 # x_dot
+  - 0.0001 # y_dot
+  - 0.0001 # z_dot
+  - 0.0001 # rot_x_dot
+  - 0.0001 # rot_y_dot
+  - 0.0001 # rot_z_dot
   - 0.1 # FR_1_dot
   - 0.1 # FR_2_dot
   - 0.1 # FR_3_dot

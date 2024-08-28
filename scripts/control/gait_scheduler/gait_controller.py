@@ -64,7 +64,7 @@ class Controller:
         controller : Controller
             Robot controller object.
         """
-        print(state.behavior_state)
+        #print(state.behavior_state)
         ########## Update operating state based on command ######
         if command.activate_event:
             state.behavior_state = self.activate_transition_mapping[state.behavior_state]

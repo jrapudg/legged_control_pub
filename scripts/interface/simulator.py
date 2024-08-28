@@ -142,7 +142,7 @@ class Simulator:
                 self.filter.update(self.ctrl[:, t], self.sensordata[:, t])
 
             if self.agent is not None:
-                if t % 1 == 0:
+                if t % 2 == 0:
                     action = self.agent.update(np.concatenate([self.data.qpos, self.data.qvel], axis=0))
                 self.data.ctrl = action
 

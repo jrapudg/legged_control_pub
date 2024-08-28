@@ -2,7 +2,7 @@
 dt: 0.01 # time step
 n_samples: 30 # number of samples
 lambda: 0.03 # temperature
-horizon: 50 # horizon
+horizon: 80 # horizon
 n_workers: 6 # number of workers
 seed: 42 # seed
 
