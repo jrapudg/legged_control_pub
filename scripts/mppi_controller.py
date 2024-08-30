@@ -152,7 +152,7 @@ class Controller:
         
         # Gazebo Simulation
         rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_z_callback)
         rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
         rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
@@ -174,7 +174,7 @@ class Controller:
         rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
         rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
         
-        rospy.sleep(5)
+        rospy.sleep(1)
         print("Pos: {}".format(self.body_pos))
         print("Ori: {}".format(self.body_ori))
         print("Lin: {}".format(self.body_vel))
@@ -184,6 +184,9 @@ class Controller:
         mppi = MPPI()
         mppi.internal_ref = True
         while not rospy.is_shutdown():
+            error = np.linalg.norm(np.array(mppi.body_ref[:3]) - np.array(self.body_pos))
+            if error < 0.2:
+                mppi.next_goal()
             print()
             self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
             # state = np.concatenate([self.body_pos, self.body_ori, 

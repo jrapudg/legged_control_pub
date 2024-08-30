@@ -91,7 +91,7 @@ class GaitScheduler:
 class MPPI:
     def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi_cf.xml"),
                  #config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two.yml")) -> None:
-                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_gait_config_walk.yml")) -> None:
+                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_gait_config_walk_gazebo.yml")) -> None:
         # load the configuration file
         with open(config_path, 'r') as file:
             params = yaml.safe_load(file)
