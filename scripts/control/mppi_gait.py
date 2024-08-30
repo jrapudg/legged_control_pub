@@ -132,7 +132,9 @@ class MPPI:
         self.act_min = np.array([-0.863, -0.686, -2.818]*4)
         
         # Gait scheduler
-        self.gait_scheduler = GaitScheduler()
+        self.gait_scheduler_in_place = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv')
+        self.gait_scheduler_walk = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv')
+        self.gait_scheduler = self.gait_scheduler_walk
         self.joints_ref = None
         #self.x_ref = jnp.concatenate([jnp.array(params['q_ref']), jnp.array(params['v_ref'])])
         
@@ -188,9 +190,13 @@ class MPPI:
                                         np.zeros(4)))
 
     def next_goal(self):
-        self.goal_index = (self.goal_index + 1) % len(self.goal_pos)
-        self.body_ref[:3] = self.goal_pos[self.goal_index] 
-        
+        if (self.goal_index == len(self.goal_pos) - 1):
+            self.gait_scheduler = self.gait_scheduler_in_place
+        elif (self.goal_index < len(self.goal_pos) - 1):
+            self.goal_index = (self.goal_index + 1)
+            self.body_ref[:3] = self.goal_pos[self.goal_index] 
+        else:
+            pass  
     #np.concatenate((self.goal_pos[self.goal_index], self.goal_ori[self.goal_index], self.cmd_vel, np.zeros(4)))
                 
     def reset_planner(self):
@@ -236,8 +242,10 @@ class MPPI:
         direction = self.body_ref[:3] - obs[:3]
         goal_delta = np.linalg.norm(direction)
         
-        if (goal_delta > 0.1): 
+        if (goal_delta > 0.1) and (self.gait_scheduler == self.gait_scheduler_walk): 
             self.goal_ori = calculate_orientation_quaternion(obs[:3], self.body_ref[:3])
+        elif self.gait_scheduler == self.gait_scheduler_in_place:
+            self.goal_ori = np.array([1,0,0,0])
 
         # print("Curernt Position",  obs[:3])
         # print("Desired Position",  self.body_ref[:3])
