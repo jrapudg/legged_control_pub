@@ -17,14 +17,14 @@ from nav_msgs.msg import Odometry
 # KP_CALF_GAIN = 50
 # KD_CALF_GAIN = 5
 
-KP_HIP_GAIN = 70
-KD_HIP_GAIN = 4
+KP_HIP_GAIN = 60
+KD_HIP_GAIN = 3
 
-KP_THIGH_GAIN = 70
-KD_THIGH_GAIN = 4
+KP_THIGH_GAIN = 60
+KD_THIGH_GAIN = 3
 
-KP_CALF_GAIN = 70
-KD_CALF_GAIN = 4
+KP_CALF_GAIN = 60
+KD_CALF_GAIN = 3
 
 
 class Controller:
@@ -124,7 +124,7 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(70) 
+        rate = rospy.Rate(100) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
@@ -182,6 +182,7 @@ class Controller:
 
         # Set up a ROS rate to manage publishing speed
         mppi = MPPI()
+        mppi.internal_ref = True
         while not rospy.is_shutdown():
             print()
             self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
@@ -209,8 +210,8 @@ class Controller:
                                     [self.joint_states["RL_hip"].dq, self.joint_states["RL_thigh"].dq, self.joint_states["RL_calf"].dq]
                                     ])
             
-            mppi.joints_ref = self.joits_ref[:, :mppi.horizon]
-            mppi.body_ref = np.concatenate((self.body_pos_goal, self.body_ori_goal, np.zeros(6)))
+            #mppi.joints_ref = self.joits_ref[:, :mppi.horizon]
+            #mppi.body_ref = np.concatenate((self.body_pos_goal, self.body_ori_goal, np.zeros(6)))
             #print( mppi.body_ref)
             control_effort = mppi.update(state)
             #control_effort = mppi.update(state, update_ref=True)

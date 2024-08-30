@@ -272,7 +272,7 @@ if __name__ == "__main__":
     #          size=[3, 1.5, 0.1])
 
     # Stairs
-    # tg.AddStairs(init_pos=[2.0, 1.0, 0.0], yaw=0.0)
+    tg.AddStairs(init_pos=[1.0, 0.0, 0.0], yaw=0.0)
 
     # Suspend stairs
     # tg.AddSuspendStairs(init_pos=[1.0, 6.0, 0.0], yaw=0.0)

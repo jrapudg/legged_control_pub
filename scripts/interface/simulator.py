@@ -142,7 +142,7 @@ class Simulator:
                 self.filter.update(self.ctrl[:, t], self.sensordata[:, t])
 
             if self.agent is not None:
-                if t % 2 == 0:
+                if t % 1 == 0:
                     action = self.agent.update(np.concatenate([self.data.qpos, self.data.qvel], axis=0))
                 self.data.ctrl = action
 
@@ -153,6 +153,7 @@ class Simulator:
                 self.agent.next_goal()
 
             if self.viewer is not None and self.viewer.is_alive:
+                
                 self.viewer.render()
             else:
                 pass
