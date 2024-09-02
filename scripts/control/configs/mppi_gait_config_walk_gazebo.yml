@@ -2,7 +2,7 @@
 dt: 0.01 # time step
 n_samples: 30 # number of samples
 lambda: 0.1 # 0.18 # temperature
-horizon: 40 # horizon
+horizon: 35 # horizon
 n_workers: 5 # number of workers
 seed: 42 # seed
 
@@ -18,7 +18,7 @@ n_knots: 4 # number of knots
 # noise to perturb the control inputs
 noise_sigma:
   - 0.06 # FR_1
-  - 0.1 # FR_2
+  - 0.06 # FR_2
   - 0.1 # FR_3
   - 0.06 # FL_1
   - 0.1 # FL_2

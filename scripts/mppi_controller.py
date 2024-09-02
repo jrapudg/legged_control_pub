@@ -124,7 +124,7 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(100) 
+        rate = rospy.Rate(70) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
@@ -151,16 +151,16 @@ class Controller:
             self.joint_command_publishers[joint] = pub
         
         # Gazebo Simulation
-        rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        rospy.Subscriber(gazebo_topic, Odometry, self.pos_z_callback)
-        rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
-        rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        # rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
         # # Unitree HW
-        # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-        # rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
+        rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
         #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
         #rospy.Subscriber(ori_topic, Odometry, self.odom_ori_callback)
@@ -171,8 +171,8 @@ class Controller:
         #rospy.Subscriber(odom_topic, Odometry, self.odom_callback)
     
 
-        rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
-        rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
+        #rospy.Subscriber(gait_topic, GaitState, self.gait_callback)
+        #rospy.Subscriber(goal_topic, GoalState, self.goal_callback)
         
         rospy.sleep(1)
         print("Pos: {}".format(self.body_pos))
@@ -181,13 +181,20 @@ class Controller:
         print("Ang: {}".format(self.body_ang_vel))
 
         # Set up a ROS rate to manage publishing speed
-        mppi = MPPI()
+        #mppi = MPPI(task='walk_straight_gz')
+        #mppi = MPPI(task='walk_octagon_gz')
+        #mppi = MPPI(task='stand_gz')
+        mppi = MPPI(task='stand_hw')
+        #mppi = MPPI(task='walk_straight_hw')
+
         mppi.internal_ref = True
         while not rospy.is_shutdown():
             error = np.linalg.norm(np.array(mppi.body_ref[:3]) - np.array(self.body_pos))
-            if error < 0.2:
+            
+            if error < 0.1:
                 mppi.next_goal()
-            print()
+
+            rospy.loginfo(mppi.gait_scheduler.type)
             self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
             # state = np.concatenate([self.body_pos, self.body_ori, 
             #                         [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],

@@ -9,11 +9,12 @@ def main():
     T = 10000
     # model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_jax_no_collision.xml")
     model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi.xml")
-    ctrl_model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi_cf.xml")
+    task = 'walk_straight'
+    #ctrl_model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi_cf.xml")
     # agent = MPPI(model_path=model_path)
     #agent = MPPI()
     #print(agent.body_ref)
-    agent = MPPI(model_path=ctrl_model_path)
+    agent = MPPI(task=task)
     agent.internal_ref = True
     simulator = Simulator(agent=agent, viewer=True, T=T, dt=0.01, timeconst=0.02,
                           model_path=model_path)
