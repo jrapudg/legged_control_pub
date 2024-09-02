@@ -314,6 +314,6 @@ kalmanFilter
     imuProcessNoiseVelocity     0.02
     footProcessNoisePosition    0.002
     footSensorNoisePosition     0.005
-    footSensorNoiseVelocity     0.1
+    footSensorNoiseVelocity     0.5
     footHeightSensorNoise       0.01
 }

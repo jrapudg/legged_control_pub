@@ -140,9 +140,11 @@ class MPPI:
         
         self.gaits = {}
         # Gait scheduler
-        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv', name='in_place')
+        #self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv', name='in_place')
+        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_10.tsv', name='in_place')
         self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert.tsv', name='trot')
-        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv', name='walk')
+        #self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv', name='walk')
+        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_10.tsv', name='walk')
         self.gait_scheduler = self.gaits['in_place']
         
         self.joints_ref = None
