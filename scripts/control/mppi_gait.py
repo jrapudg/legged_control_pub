@@ -219,7 +219,7 @@ class MPPI:
         direction = self.body_ref[:3] - obs[:3]
         goal_delta = np.linalg.norm(direction)
         
-        if (goal_delta > 0.1) and ((self.gait_scheduler == self.gaits['walk'] or self.gait_scheduler == self.gaits['trot'])): 
+        if (goal_delta > 0.1) and ((self.gait_scheduler == self.gaits['walk']) or (self.gait_scheduler == self.gaits['trot'])): 
             self.goal_ori = calculate_orientation_quaternion(obs[:3], self.body_ref[:3])
         elif self.gait_scheduler == self.gaits['in_place']:
             self.goal_ori = np.array([1,0,0,0])
