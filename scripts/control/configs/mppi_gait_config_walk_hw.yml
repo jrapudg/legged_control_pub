@@ -35,7 +35,7 @@ noise_sigma:
 Q_diag: 
   - 500 # x #2000
   - 500 # y #2000
-  - 5000 # z #1000
+  - 500 # z #1000
   - 400000 # rot_quat, 600000
   - 0 # rot_quat
   - 0 # rot_quat
