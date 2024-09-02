@@ -33,9 +33,9 @@ noise_sigma:
 
 # diagonal entries of the cost matrix Q
 Q_diag: 
-  - 2000 # x #2000
+  - 4500 # x #2000
   - 2000 # y #2000
-  - 4000 # z #1000
+  - 6000 # z #1000
   - 300000 # rot_quat, 600000
   - 0 # rot_quat
   - 0 # rot_quat
@@ -52,7 +52,7 @@ Q_diag:
   - 700 # RL_1
   - 700 # RL_2
   - 700 # RL_3
-  - 1 # x_dot
+  - 0.1 # x_dot
   - 0.0001 # y_dot
   - 0.0001 # z_dot
   - 0.0001 # rot_x_dot

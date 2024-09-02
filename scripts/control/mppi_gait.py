@@ -12,6 +12,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from scipy.spatial.transform import Rotation as R
+from control.gait_scheduler.tasks import get_task
 
 def batch_world_to_local_velocity(quaternions, world_velocities):
     """
@@ -70,7 +71,7 @@ def calculate_orientation_quaternion(current_point, goal_point):
     return quaternion
 
 class GaitScheduler:
-    def __init__(self, gait_path = 'gaits/walking_gait_raibert_0_2.tsv', phase_time = 0):
+    def __init__(self, gait_path = 'gaits/walking_gait_raibert_0_2.tsv', name='walk', phase_time = 0):
         # Load the configuration file
         with open(gait_path, 'r') as file:
             gait_array = np.loadtxt(file, delimiter='\t')
@@ -80,6 +81,7 @@ class GaitScheduler:
         self.phase_length = gait_array.shape[1]
         self.phase_time = phase_time
         self.indices = np.arange(self.phase_length)
+        self.type = name
         
     def roll(self):
         self.phase_time += 1
@@ -89,9 +91,14 @@ class GaitScheduler:
         return self.gait[:, self.phase_time] 
 
 class MPPI:
-    def __init__(self, model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_mppi_cf.xml"),
-                 #config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_two.yml")) -> None:
-                 config_path=os.path.join(os.path.dirname(__file__), "configs/mppi_gait_config_walk_gazebo.yml")) -> None:
+    def __init__(self, model_path = os.path.join("models/go1/go1_scene_mppi.xml"),
+                 config_path=os.path.join("control/configs/mppi_gait_config_walk.yml"),
+                 task = 'stand') -> None:
+
+        # Task
+        self.goal_pos, self.goal_ori, self.cmd_vel, self.goal_thresh,\
+                        self.desired_gait, model_path, config_path = get_task(task)
+        
         # load the configuration file
         with open(config_path, 'r') as file:
             params = yaml.safe_load(file)
@@ -131,12 +138,14 @@ class MPPI:
         self.act_max = np.array([0.863, 4.501, -0.888]*4)
         self.act_min = np.array([-0.863, -0.686, -2.818]*4)
         
+        self.gaits = {}
         # Gait scheduler
-        self.gait_scheduler_in_place = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv')
-        self.gait_scheduler_walk = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv')
-        self.gait_scheduler = self.gait_scheduler_walk
+        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv', name='in_place')
+        self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert.tsv', name='trot')
+        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv', name='walk')
+        self.gait_scheduler = self.gaits['in_place']
+        
         self.joints_ref = None
-        #self.x_ref = jnp.concatenate([jnp.array(params['q_ref']), jnp.array(params['v_ref'])])
         
         # Rollouts
         self.h = params['dt']
@@ -150,55 +159,21 @@ class MPPI:
             
         self.trajectory = None
         self.reset_planner() 
-        self.goal_pos = [[1, 0, 0.27],
-                         [2, 1, 0.27],
-                         [2, 2, 0.27],
-                         [1, 3, 0.27],
-                         [0, 3, 0.27], 
-                         [-1, 2, 0.27], 
-                         [-1, 1, 0.27],
-                         [0, 0, 0.27]]
-                        
-        #self.goal_pos = [[1, 0, 0.57]]
-        # self.goal_pos = [[1, 0, 0.4],
-        #                  [2, 1, 0.4],
-        #                  [2, 2, 0.4],
-        #                  [1, 3, 0.4],
-        #                  [0, 3, 0.4], 
-        #                  [-1, 2, 0.4], 
-        #                  [-1, 1, 0.4],
-        #                  [0, 0, 0.4]]
-        
-        self.goal_ori = [[1, 0, 0, 0]]
-                         # #[0.819,-0.177,0.427,0.339], 
-                         # [0.92388, 0, 0, 0.38268],
-                         # [0.7071, 0, 0, 0.7071], 
-                         # [0.38268, 0, 0, 0.92388],
-                         # [0, 0, 0, 1],
-                         # [-0.38268, 0, 0, 0.92388],
-                         # [-0.7071, 0, 0, 0.7071],
-                         # [-0.92388, 0, 0, 0.38268]]
-        # self.goal_pos = [[1, 0, 0.67]]
-        
-        # self.goal_ori = [[1, 0, 0, 0]]
-
         self.goal_index = 0
-        self.cmd_vel = np.array([0.2, 0])
+        
         self.body_ref = np.concatenate((self.goal_pos[self.goal_index], 
                                         self.goal_ori[self.goal_index],
-                                        self.cmd_vel,
+                                        self.cmd_vel[self.goal_index],
                                         np.zeros(4)))
-
+        self.gait_scheduler = self.gaits[self.desired_gait[self.goal_index]]
+        
     def next_goal(self):
-        if (self.goal_index == len(self.goal_pos) - 1):
-            self.gait_scheduler = self.gait_scheduler_in_place
-        elif (self.goal_index < len(self.goal_pos) - 1):
+        if self.goal_index < len(self.goal_pos) -1:
             self.goal_index = (self.goal_index + 1)
             self.body_ref[:3] = self.goal_pos[self.goal_index] 
-        else:
-            pass  
-    #np.concatenate((self.goal_pos[self.goal_index], self.goal_ori[self.goal_index], self.cmd_vel, np.zeros(4)))
-                
+            self.body_ref[7:9] = self.cmd_vel[self.goal_index]
+            self.gait_scheduler = self.gaits[self.desired_gait[self.goal_index]]
+                        
     def reset_planner(self):
         self.trajectory = np.zeros((self.horizon, self.act_dim))
         self.trajectory += self.sampling_init
@@ -242,20 +217,15 @@ class MPPI:
         direction = self.body_ref[:3] - obs[:3]
         goal_delta = np.linalg.norm(direction)
         
-        if (goal_delta > 0.1) and (self.gait_scheduler == self.gait_scheduler_walk): 
+        if (goal_delta > 0.1) and ((self.gait_scheduler == self.gaits['walk'] or self.gait_scheduler == self.gaits['trot'])): 
             self.goal_ori = calculate_orientation_quaternion(obs[:3], self.body_ref[:3])
-        elif self.gait_scheduler == self.gait_scheduler_in_place:
+        elif self.gait_scheduler == self.gaits['in_place']:
             self.goal_ori = np.array([1,0,0,0])
 
-        # print("Curernt Position",  obs[:3])
-        # print("Desired Position",  self.body_ref[:3])
-        # print("Orientation", orientation_goal)
         self.body_ref[3:7] = self.goal_ori
         self.rollout_func(self.state_rollouts, actions, np.repeat(np.array([np.concatenate([[0],obs])]), self.n_samples, axis=0), num_workers=self.num_workers, nstep=self.horizon)
-        #states, actions, phase_time, joints_gait, body_ref
         
         if self.internal_ref:
-            #print("Updating reference")
             self.joints_ref = self.gait_scheduler.gait[:, self.gait_scheduler.indices[:self.horizon]]
             
         costs_sum = self.cost_func(self.state_rollouts[:,:,1:], actions, 
