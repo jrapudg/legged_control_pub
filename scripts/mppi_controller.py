@@ -124,7 +124,7 @@ class Controller:
 
     def loop(self):
         rospy.init_node('controller_quadruped', anonymous=True)
-        rate = rospy.Rate(70) 
+        rate = rospy.Rate(100) 
 
         # List of joints to control
         joints = ["RL_hip", "RR_hip", "FL_hip", "FR_hip", 
@@ -134,9 +134,6 @@ class Controller:
         mocap_topic = "/mocap_node/Go1_body/Odom"
         odom_topic = "/odom"
         gazebo_topic = "/ground_truth/state"
-
-        gait_topic = "/quadruped/gait"
-        goal_topic = '/quadruped/goal'
 
         # Create subscribers and publishers for each joint
         for joint in joints:
@@ -184,18 +181,24 @@ class Controller:
         #mppi = MPPI(task='walk_straight_gz')
         #mppi = MPPI(task='walk_octagon_gz')
         #mppi = MPPI(task='stand_gz')
-        mppi = MPPI(task='stand_hw')
-        #mppi = MPPI(task='walk_straight_hw')
+        #mppi = MPPI(task='stand_80')
+        mppi = MPPI(task='stand_gz')
+        #mppi = MPPI(task='walk_straight_gz')
 
         mppi.internal_ref = True
+        self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
+        rospy.loginfo(f"Position {self.body_xy}: Goal = {mppi.body_ref[:3]}")
+
         while not rospy.is_shutdown():
+            self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
             error = np.linalg.norm(np.array(mppi.body_ref[:3]) - np.array(self.body_pos))
             
-            if error < 0.1:
+            if error < 0.2:
                 mppi.next_goal()
+            # # For debbuging    
+            #rospy.loginfo(f"Position {self.body_xy}: Goal = {mppi.body_ref[:3]}")
 
-            rospy.loginfo(mppi.gait_scheduler.type)
-            self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]
+            #rospy.loginfo(mppi.gait_scheduler.type)
             # state = np.concatenate([self.body_pos, self.body_ori, 
             #                         [self.joint_states["FL_hip"].q, self.joint_states["FL_thigh"].q, self.joint_states["FL_calf"].q],
             #                         [self.joint_states["FR_hip"].q, self.joint_states["FR_thigh"].q, self.joint_states["FR_calf"].q],
@@ -257,9 +260,9 @@ class Controller:
 
                 if joint_name in self.joint_command_publishers:
                     self.joint_command_publishers[joint_name].publish(command_msg)
-                    rospy.loginfo(f"Control command for {joint_name}: Position = {self.controls[joint_name]}")
+                    #rospy.loginfo(f"Control command for {joint_name}: Position = {self.controls[joint_name]}")
 
-            rospy.loginfo(f"Position {self.body_pos}: Orientation = {self.body_ori}")
+            #rospy.loginfo(f"Position {self.body_pos}: Orientation = {self.body_ori}")
             rate.sleep()  # Sleep to maintain the loop rate at 50 Hz
 
 if __name__ == '__main__':

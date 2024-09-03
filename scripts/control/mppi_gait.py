@@ -129,7 +129,7 @@ class MPPI:
         self.q_ref = np.array(params['q_ref'])
         self.v_ref = np.array(params['v_ref'])
         
-        # Threding
+        # Threading
         self.thread_local = threading.local()   
         self.executor = ThreadPoolExecutor(max_workers=self.num_workers, initializer=self.thread_initializer)
 
@@ -140,14 +140,29 @@ class MPPI:
         
         self.gaits = {}
         # Gait scheduler
-        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_15.tsv', name='in_place')
-        self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_5_15.tsv', name='trot')
-        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_15.tsv', name='walk')
+        # self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_slow_0_0.tsv', name='in_place')
+        # self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_slow_0_5.tsv', name='trot')
+        # self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_slow_0_2.tsv', name='walk')
+
+        # Gait scheduler
+        # self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_15.tsv', name='in_place')
+        # self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_5_15.tsv', name='trot')
+        # self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_1_15.tsv', name='walk')
+        
         #self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0.tsv', name='in_place')
-        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_10.tsv', name='in_place')
-        self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert.tsv', name='trot')
-        #self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2.tsv', name='walk')
-        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_10.tsv', name='walk')
+        
+        #self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_10.tsv', name='in_place')
+        #self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert.tsv', name='trot')
+        #self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_1.tsv', name='walk')
+        #self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_10.tsv', name='walk')
+        
+        # self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_0_15cm.tsv', name='in_place')
+        # self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_5_15cm.tsv', name='trot')
+        # self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_15cm.tsv', name='walk')
+
+        self.gaits['in_place'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_0_10cm.tsv', name='in_place')
+        self.gaits['trot'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_5_15cm.tsv', name='trot')
+        self.gaits['walk'] = GaitScheduler(gait_path ='gaits/walking_gait_raibert_0_2_15cm.tsv', name='walk')
         self.gait_scheduler = self.gaits['in_place']
         
         self.joints_ref = None

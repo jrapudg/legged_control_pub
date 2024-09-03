@@ -1,6 +1,6 @@
 legged_unitree_hw:
-  loop_frequency: 200
-  cycle_time_error_threshold: 0.005
+  loop_frequency: 400
+  cycle_time_error_threshold: 0.0025
   thread_priority: 95
   power_limit: 7
   contact_threshold: 50

@@ -10,6 +10,7 @@ def main():
     # model_path = os.path.join(os.path.dirname(__file__), "../models/go1/go1_scene_jax_no_collision.xml")
     model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi.xml")
     task = 'walk_octagon_80'
+    #task = 'stand_80'
     #ctrl_model_path = os.path.join(os.path.dirname(__file__), "models/go1/go1_scene_mppi_cf.xml")
     # agent = MPPI(model_path=model_path)
     #agent = MPPI()
