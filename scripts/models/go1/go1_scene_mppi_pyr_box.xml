@@ -23,7 +23,7 @@
       <geom size="0.12" contype="0" conaffinity="0" rgba="0 1 0 .5" group="2"/>
     </body> -
     -->
-    <body name="box" mocap="true" pos="-2.31 0.38 0">
+    <body name="box" mocap="true" pos="1.13 0 0">
       <geom name="box" class="prop" size="0.31 0.31 0.112"/>
     </body>
     <!-- 
@@ -65,27 +65,8 @@
     <general class="hip" name="RL_thigh" joint="RL_thigh_joint"/>
     <general class="knee" name="RL_calf" joint="RL_calf_joint"/>
   </actuator>
-  <!-- <actuator>
-        <motor name="FL_hip"    gear="1" joint="FL_hip_joint"   ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="FL_thigh"  gear="1" joint="FL_thigh_joint" ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="FL_calf"   gear="1" joint="FL_calf_joint"  ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="FR_hip"    gear="1" joint="FR_hip_joint"   ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="FR_thigh"  gear="1" joint="FR_thigh_joint" ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="FR_calf"   gear="1" joint="FR_calf_joint"  ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RL_hip"    gear="1" joint="RL_hip_joint"   ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RL_thigh"  gear="1" joint="RL_thigh_joint" ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RL_calf"   gear="1" joint="RL_calf_joint"  ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RR_hip"    gear="1" joint="RR_hip_joint"   ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RR_thigh"  gear="1" joint="RR_thigh_joint" ctrllimited="true" ctrlrange="-33.5 33.5"/>
-        <motor name="RR_calf"   gear="1" joint="RR_calf_joint"  ctrllimited="true" ctrlrange="-33.5 33.5"/>
-  </actuator> -->
+
   <sensor>
-    <!-- estimator measurements -->
-    <!-- <framepos name="torso_pos" objtype="body" objname="trunk" />
-    <framepos name="FR_pos" objtype="site" objname="FR" />
-    <framepos name="FL_pos" objtype="site" objname="FL" />
-    <framepos name="RR_pos" objtype="site" objname="RR" />
-    <framepos name="RL_pos" objtype="site" objname="RL" /> -->
 
     <framepos name="torso_pos" objtype="xbody" objname="trunk" />
     <framequat name="torso_quat" objtype="xbody" objname="trunk" />
@@ -103,18 +84,11 @@
     <jointpos name="pos_RL_thigh_joint" joint="RL_thigh_joint" />
     <jointpos name="pos_RL_calf_joint" joint="RL_calf_joint" />
 
-    <!-- <gyro site="imu" name="gyro"/>
-    <accelerometer site="imu" name="accelerometer"/> -->
-
-    <!-- <touch name="FR_touch" site="FR"/>
-    <touch name="FL_touch" site="FL"/>
-    <touch name="RR_touch" site="RR"/>
-    <touch name="RL_touch" site="RL"/> -->
   </sensor>
 
   <keyframe>
     <key name="home" 
-         qpos="-3.44 0.36 0.26 
+         qpos="0 0 0.26 
                1 0 0 0 
                0 0.9 -1.8 
                0 0.9 -1.8 
@@ -125,7 +99,7 @@
             0 0.9 -1.8 
             0 0.9 -1.8"/>
     <key name="sit" 
-      qpos="-3.44 0.36 0.08 
+      qpos="0 0 0.08 
             1 0 0 0 
             0.073 1.34 -2.83 
             0.073 1.34 -2.83 
@@ -136,7 +110,7 @@
             0.073 1.34 -2.83 
             0.073 1.34 -2.83"/>
     <key name="tune" 
-      qpos="-3.44 0.36 0.08 
+      qpos="0 0 0.08 
             1 0 0 0 
             -0.1 1.34 -2.83 
             0.1 1.34 -2.83 

@@ -148,16 +148,16 @@ class Controller:
             self.joint_command_publishers[joint] = pub
         
         # Gazebo Simulation
-        # rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-        # rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
-        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_xy_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.pos_z_callback)
+        rospy.Subscriber(gazebo_topic, Odometry, self.odom_ori_callback)
+        rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
         # # Unitree HW
-        rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
-        rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
-        rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
-        rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
+        # rospy.Subscriber(mocap_topic, Odometry, self.pos_xy_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.pos_z_callback)
+        # rospy.Subscriber(mocap_topic, Odometry, self.odom_ori_callback)
+        # rospy.Subscriber(odom_topic, Odometry, self.odom_vel_callback)
 
         #rospy.Subscriber(pos_topic, Odometry, self.mocap_pos_callback)
         #rospy.Subscriber(ori_topic, Odometry, self.odom_ori_callback)
@@ -182,8 +182,9 @@ class Controller:
         #mppi = MPPI(task='walk_octagon_gz')
         #mppi = MPPI(task='stand_gz')
         #mppi = MPPI(task='stand_80')
-        mppi = MPPI(task='stand_gz')
+        #mppi = MPPI(task='stand_gz')
         #mppi = MPPI(task='walk_straight_gz')
+        mppi = MPPI(task='box_gz')
 
         mppi.internal_ref = True
         self.body_pos = [self.body_xy[0], self.body_xy[1], self.body_z[0]]

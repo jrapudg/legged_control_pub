@@ -486,6 +486,29 @@ def task_box_hw():
     default_orientation = [[1, 0, 0, 0]]
 
     cmd_vel = [[0.0, 0.0],
+               [0.2, 0.0], #1
+               [0.2, 0.0]]
+
+    goal_thresh =  [0.1,
+                    0.2,
+                    0.2]
+        
+    desired_gait = ['in_place',
+                    'walk',     #1
+                    'in_place'] #2
+    
+    model_path = 'models/go1/go1_scene_mppi_pyr_box.xml'
+    config_path = 'control/configs/mppi_gait_config_box_hw.yml'
+    return goal_pos, default_orientation, cmd_vel, goal_thresh, desired_gait, model_path, config_path
+
+def task_box_gz():
+    goal_pos = [[0.0, 0.0, 0.27],
+                [0.9, 0.0, 0.5], #1
+                [1.11, 0.0, 0.382]]  #2
+        
+    default_orientation = [[1, 0, 0, 0]]
+
+    cmd_vel = [[0.0, 0.0],
                [0.5, 0.0], #1
                [0.5, 0.0]]
 
@@ -494,11 +517,11 @@ def task_box_hw():
                     0.2]
         
     desired_gait = ['in_place',
-                    'trot',     #1
+                    'walk',     #1
                     'in_place'] #2
     
     model_path = 'models/go1/go1_scene_mppi_pyr_box.xml'
-    config_path = 'control/configs/mppi_gait_config_box_hw.yml'
+    config_path = 'control/configs/mppi_gait_config_box_gazebo.yml'
     return goal_pos, default_orientation, cmd_vel, goal_thresh, desired_gait, model_path, config_path
 
 def get_task(task):
@@ -534,6 +557,7 @@ def get_task(task):
         return task_stand_hw()
     elif task == 'walk_straight_hw':
         return task_walk_straight_hw()
-    
     elif task == 'box_hw':
         return task_box_hw()
+    elif task == 'box_gz':
+        return task_box_gz()

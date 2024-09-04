@@ -188,7 +188,8 @@ class MPPI:
         self.gait_scheduler = self.gaits[self.desired_gait[self.goal_index]]
         
     def next_goal(self):
-        if self.goal_index < len(self.goal_pos) -1:
+        if (self.goal_index == 0 and (len(self.goal_pos) - 1 > 0 and self.gait_scheduler.phase_time > 300)) or \
+            (self.goal_index > 0 and (self.goal_index < len(self.goal_pos)- 1)):
             self.goal_index = (self.goal_index + 1)
             self.body_ref[:3] = self.goal_pos[self.goal_index] 
             self.body_ref[7:9] = self.cmd_vel[self.goal_index]
